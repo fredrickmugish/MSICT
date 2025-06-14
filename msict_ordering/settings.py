@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,16 +85,10 @@ WSGI_APPLICATION = 'msict_ordering.wsgi.application'
 # }
 
 
-import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.parse(
-        "postgresql://msict_user:0sG3NcOumz0bE6bSTPm14p9GiNlpj34p@dpg-d16lp015pdvs73ffjvmg-a.oregon-postgres.render.com/msict",
-        conn_max_age=600
-    )
+    "default": dj_database_url.parse("postgresql://msict_user:0sG3NcOumz0bE6bSTPm14p9GiNlpj34p@dpg-d16lp015pdvs73ffjvmg-a.oregon-postgres.render.com/msict")
 }
-
-
 
 
 
