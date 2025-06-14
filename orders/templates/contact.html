@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact MSICT ORS | Military School of ICT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #203864;
+            --secondary-color: #1e406a;
+            --accent-color: #4a90e2;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .navbar {
+            background: #1e406a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .contact-hero {
+            background: linear-gradient(rgba(32, 56, 100, 0.9), rgba(30, 64, 106, 0.9)), 
+                        url('https://images.unsplash.com/photo-1587560699334-bea93391dcef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .contact-card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .contact-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            border-color: var(--accent-color);
+        }
+        
+        .btn-send {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-send:hover {
+            background-color: #3a7bc8;
+            border-color: #3a7bc8;
+            transform: translateY(-2px);
+        }
+        
+        .map-container {
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(74, 144, 226, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            margin-right: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .contact-info-item {
+            margin-bottom: 1.5rem;
+            padding-left: 2.5rem;
+            position: relative;
+        }
+        
+        .contact-info-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+
+         footer {
+            background-color:#1e406a;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+        
+        .feature-highlight {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-building-gear me-2"></i>
+                MSICT ORS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'about' %}">About</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                    
+                </ul>
+                <a href="{% url 'login' %}" class="btn btn-outline-light ms-lg-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="contact-hero">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">Contact MSICT ORS</h1>
+            <p class="lead mb-0">Get in touch with our support team for assistance with the Offices Requirement Ordering System</p>
+        </div>
+    </section>
+
+    <!-- Contact Options -->
+    <section class="container mb-5">
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="contact-card p-4 text-center">
+                    <i class="bi bi-telephone contact-icon"></i>
+                    <h4 class="mb-3">Phone Support</h4>
+                    <p class="mb-2">Available Monday-Friday</p>
+                    <p class="mb-0 fw-bold">+255 XXX XXX XXX</p>
+                    <p class="mb-0">8:00 AM - 5:00 PM EAT</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-card p-4 text-center">
+                    <i class="bi bi-envelope contact-icon"></i>
+                    <h4 class="mb-3">Email Support</h4>
+                    <p class="mb-2">For technical issues and inquiries</p>
+                    <p class="mb-0 fw-bold">support@msict-ors.mil</p>
+                    <p class="mb-0">Response within 24 hours</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-card p-4 text-center">
+                    <i class="bi bi-chat-square-text contact-icon"></i>
+                    <h4 class="mb-3">System Feedback</h4>
+                    <p class="mb-2">Suggestions for improvement</p>
+                    <p class="mb-0 fw-bold">feedback@msict-ors.mil</p>
+                    <p class="mb-0">We value your input</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="contact-card p-4">
+                    <h3 class="mb-4">Send Us a Message</h3>
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="Your name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" placeholder="Your email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" placeholder="Message subject" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" rows="5" placeholder="Your message" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-send">
+                                    <i class="bi bi-send me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-card p-4 h-100">
+                    <h3 class="mb-4">Contact Information</h3>
+                    
+                    <div class="contact-info-item">
+                        <i class="bi bi-geo-alt contact-info-icon"></i>
+                        <h5 class="mb-2">MSICT Headquarters</h5>
+                        <p class="mb-0">P.O. Box 12345<br>Dar es Salaam, Tanzania</p>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <i class="bi bi-clock contact-info-icon"></i>
+                        <h5 class="mb-2">Working Hours</h5>
+                        <p class="mb-0">Monday - Friday: 8:00 AM - 5:00 PM<br>Saturday - Sunday: Closed</p>
+                    </div>
+                    
+                    <div class="contact-info-item">
+                        <i class="bi bi-share contact-info-icon"></i>
+                        <h5 class="mb-2">Connect With Us</h5>
+                        <div class="d-flex mt-2">
+                            <a href="#" class="social-icon">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="map-container mt-4">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.041926700692!2d39.20878931528691!3d-6.774869295072429!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b0d28f88e39%3A0x67f5a6e5c61e58e5!2sDar%20es%20Salaam%2C%20Tanzania!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
+                                width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                                 <!-- src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3981.982258378784!2d39.08999961475773!3d-5.089722996356033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMDUnMjMuMCJTIDM5wrAwNScyNi4wIkU!5e0!3m2!1sen!2stz!4v1620000000000!5m2!1sen!2stz" -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="bg-light py-5 mb-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="fw-bold mb-4">Technical Support</h2>
+                    <p class="lead mb-4">For urgent system issues or login problems, please contact our dedicated technical support team.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="tel:+255XXXXXXXXX" class="btn btn-primary">
+                            <i class="bi bi-telephone me-2"></i>Call Support
+                        </a>
+                        <a href="mailto:support@msict-ors.mil" class="btn btn-outline-primary">
+                            <i class="bi bi-envelope me-2"></i>Email Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3">MSICT ORS</h5>
+                    <p>The Military School of Information and Communication Technology's digital solution for equipment requisition and approval workflows.</p>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                           <li class="mb-2"><a href="{% url 'home' %}" class="text-white">Contact</a></li>
+                              <li class="mb-2"><a href="{% url 'home' %}" class="text-white">About</a></li>
+                        
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5 class="mb-3">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-envelope me-2"></i> support@msict-ors.mil</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2"></i> +255 XXX XXX XXX</li>
+                        <li><i class="bi bi-geo-alt me-2"></i> MSICT Headquarters, Tanzania</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Follow Us</h5>
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter fs-4"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-linkedin fs-4"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 MSICT Offices Requirement Ordering System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

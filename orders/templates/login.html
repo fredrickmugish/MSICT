@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - MSICT</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+
+    
+    body {
+      height: 100vh;
+      margin: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2.5rem 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 380px;
+      backdrop-filter: blur(10px);
+    }
+    h4 {
+      color: #203864;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .form-control {
+      padding-left: 2.75rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      border: 1px solid #ccc;
+    }
+    .form-control:focus {
+      border-color: #203864;
+      box-shadow: 0 0 0 0.2rem rgba(32, 56, 100, 0.25);
+    }
+    .input-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: #203864;
+      pointer-events: none;
+    }
+    .btn-primary {
+      background-color: #203864;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      padding: 0.6rem;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #1a2e58;
+    }
+    
+    /* Navigation styles */
+    .navbar {
+      background: #1e406a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+    
+    /* Footer styles */
+    footer {
+      width: 100%;
+      background: #1e406a;;
+      color: white;
+      padding: 2rem 0;
+      margin-top: auto;
+    }
+    
+    footer a {
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+    
+    footer a:hover {
+      opacity: 0.8;
+    }
+    
+    footer .bi {
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+   <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-building-gear me-2"></i>
+                MSICT ORS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'about' %}">About</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                    
+                </ul>
+                <a href="{% url 'login' %}" class="btn btn-outline-light ms-lg-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+  <!-- Main Login Content -->
+  <div class="login-container">
+    <h4>MSICT Portal</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      <div class="form-group">
+        <i class="bi bi-person-fill input-icon"></i>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          class="form-control"
+          placeholder="Username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <i class="bi bi-lock-fill input-icon"></i>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          class="form-control"
+          placeholder="Password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-3">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Login
+      </button>
+    </form>
+  </div>
+  <br><br><br>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5 class="mb-3">MSICT ORS</h5>
+          <p>The Military School of Information and Communication Technology's digital solution for equipment requisition and approval workflows.</p>
+        </div>
+        <div class="col-md-2 mb-4 mb-md-0">
+          <h5 class="mb-3">Quick Links</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+            <li class="mb-2"><a href="{% url 'contact' %}" class="text-white">Contact</a></li>
+            <li class="mb-2"><a href="{% url 'about' %}" class="text-white">About</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3 mb-4 mb-md-0">
+          <h5 class="mb-3">Contact</h5>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-envelope me-2"></i> support@msict-ors.mil</li>
+            <li class="mb-2"><i class="bi bi-telephone me-2"></i> +255 XXX XXX XXX</li>
+            <li><i class="bi bi-geo-alt me-2"></i> MSICT Headquarters, Tanzania</li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h5 class="mb-3">Follow Us</h5>
+          <a href="#" class="text-white me-3"><i class="bi bi-facebook fs-4"></i></a>
+          <a href="#" class="text-white me-3"><i class="bi bi-twitter fs-4"></i></a>
+          <a href="#" class="text-white me-3"><i class="bi bi-linkedin fs-4"></i></a>
+          <a href="#" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
+        </div>
+      </div>
+      <hr class="my-4 bg-secondary">
+      <div class="text-center">
+        <p class="mb-0">&copy; 2025 MSICT Offices Requirement Ordering System. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.querySelector("form");
+    const usernameField = document.getElementById("username");
+    const passwordField = document.getElementById("password");
+
+    function showError(input, message) {
+      let error = input.parentElement.querySelector(".text-danger");
+      if (!error) {
+        error = document.createElement("div");
+        error.className = "text-danger mt-1 small";
+        input.parentElement.appendChild(error);
+      }
+      error.textContent = message;
+      input.classList.add("is-invalid");
+    }
+
+    function clearError(input) {
+      const error = input.parentElement.querySelector(".text-danger");
+      if (error) error.remove();
+      input.classList.remove("is-invalid");
+    }
+
+    form.addEventListener("submit", function (e) {
+      let valid = true;
+
+      const username = usernameField.value.trim();
+      const password = passwordField.value.trim();
+
+      clearError(usernameField);
+      clearError(passwordField);
+
+      if (!username) {
+        showError(usernameField, "Username is required.");
+        valid = false;
+      }
+      if (!password) {
+        showError(passwordField, "Password is required.");
+        valid = false;
+      }
+
+      if (!valid) {
+        e.preventDefault(); // prevent form from submitting
+      }
+    });
+
+    usernameField.addEventListener("input", () => clearError(usernameField));
+    passwordField.addEventListener("input", () => clearError(passwordField));
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

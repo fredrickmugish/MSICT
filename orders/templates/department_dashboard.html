@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Department Dashboard - MSICT</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .sidebar {
+      background-color: #203864;
+      height: 100vh;
+      color: white;
+      position: fixed;
+    }
+    .sidebar a {
+      color: white;
+      display: block;
+      padding: 15px;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #162b4c;
+    }
+    .content {
+      padding: 2rem;
+      margin-left: 220px;
+    }
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .form-section {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar col-md-2">
+  <div class="text-center py-4">
+    <h4>DEPARTMENT</h4>
+  </div>
+  <a href="#"><i class="fas fa-home me-2"></i> Dashboard</a>
+  <a href="#submit-request"><i class="fas fa-plus me-2"></i> Submit Request</a>
+  <a href="#requests-status"><i class="fas fa-list me-2"></i> My Requests</a>
+  <a href="#feedback"><i class="fas fa-comment me-2"></i> Feedback</a>
+  <a href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+</div>
+
+<div class="content">
+  <h2 class="mb-4">Welcome, {{ user.username }}</h2>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Total Requests</h5>
+          <p class="card-text display-6">{{ total_requests }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Pending</h5>
+          <p class="card-text display-6">{{ pending_requests }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Approved</h5>
+          <p class="card-text display-6">{{ approved_requests }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Request Section -->
+  <div id="submit-request" class="form-section">
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        Submit New Equipment Request
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/department/submit-request/">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Equipment Name</label>
+            <input type="text" name="equipment" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Purpose</label>
+            <textarea name="purpose" class="form-control" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Requests Section -->
+  <div id="requests-status" class="form-section">
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        My Request Status
+      </div>
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Equipment</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for request in my_requests %}
+          <tr>
+            <td>{{ request.equipment }}</td>
+            <td>{{ request.quantity }}</td>
+            <td>{{ request.status }}</td>
+            <td>{{ request.date_submitted }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Feedback Section -->
+  <div id="feedback" class="form-section">
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        Feedback from QM/CO
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for note in feedbacks %}
+        <li class="list-group-item">{{ note }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

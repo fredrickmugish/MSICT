@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSICT Offices Requirement Ordering System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #203864;
+            --secondary-color: #1e406a;
+            --accent-color: #4a90e2;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+            font-family: 'Montserrat', sans-serif;
+
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .navbar {
+            background: #1e406a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(32, 56, 100, 0.9), rgba(30, 64, 106, 0.9)), url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 6rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #162a4f;
+            border-color: #162a4f;
+        }
+        
+        .process-step {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .process-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: var(--accent-color);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        footer {
+            background-color: #1e406a;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+        }
+        
+        .feature-highlight {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-building-gear me-2"></i>
+                MSICT ORS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'about' %}">About</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                    
+                </ul>
+                <a href="{% url 'login' %}" class="btn btn-outline-light ms-lg-3">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">MSICT Offices Requirement Ordering System</h1>
+            <p class="lead mb-5">Streamlining the process of equipment requests and approvals between departments, store keepers, and organization leadership</p>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 me-2">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Get Started
+            </a>
+            <a href="{% url 'about' %}" class="btn btn-outline-light btn-lg px-4">
+                <i class="bi bi-info-circle me-2"></i>Learn More
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container mb-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-icon">
+                            <i class="bi bi-send-check"></i>
+                        </div>
+                        <h4 class="card-title">Request Submission</h4>
+                        <p class="card-text">Departments can easily submit their equipment requirements through a simple online form.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-icon">
+                            <i class="bi bi-clipboard2-check"></i>
+                        </div>
+                        <h4 class="card-title">QM Review</h4>
+                        <p class="card-text">Store keepers (QM) receive requests, verify availability, and forward to CO for approval.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-icon">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <h4 class="card-title">CO Approval</h4>
+                        <p class="card-text">Head of Organization (CO) reviews and approves/rejects requests with feedback.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="container mb-5 py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-4">Workflow Process</h2>
+                
+                <div class="feature-highlight">
+                    <h4>Department Request</h4>
+                    <p>HZO offices and NDO departments submit their equipment needs through the system.</p>
+                </div>
+                
+                <div class="feature-highlight">
+                    <h4>QM Verification</h4>
+                    <p>The Store Keeper (QM) reviews the request for validity and availability.</p>
+                </div>
+                
+                <div class="feature-highlight">
+                    <h4>CO Decision</h4>
+                    <p>The Head of Organization (CO) approves or rejects the request with feedback.</p>
+                </div>
+                
+                <div class="feature-highlight">
+                    <h4>Feedback Loop</h4>
+                    <p>Status updates flow back through QM to the requesting department.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="img-fluid rounded shadow" alt="Office workflow">
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="bg-light py-5 mb-5">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-4">Ready to streamline your equipment requests?</h2>
+            <p class="lead mb-4">Join the digital transformation of MSICT's requisition process today.</p>
+            <a href="/login" class="btn btn-primary btn-lg px-4">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login to Get Started
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3">MSICT ORS</h5>
+                    <p>The Military School of Information and Communication Technology's digital solution for equipment requisition and approval workflows.</p>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                           <li class="mb-2"><a href="{% url 'home' %}" class="text-white">Contact</a></li>
+                              <li class="mb-2"><a href="{% url 'home' %}" class="text-white">About</a></li>
+                        
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h5 class="mb-3">Contact</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-envelope me-2"></i> support@msict-ors.mil</li>
+                        <li class="mb-2"><i class="bi bi-telephone me-2"></i> +255 XXX XXX XXX</li>
+                        <li><i class="bi bi-geo-alt me-2"></i> MSICT Headquarters, Tanzania</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Follow Us</h5>
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter fs-4"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-linkedin fs-4"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
+                </div>
+            </div>
+            <hr class="my-4 bg-secondary">
+            <div class="text-center">
+                <p class="mb-0">&copy; 2025 MSICT Offices Requirement Ordering System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
