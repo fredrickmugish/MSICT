@@ -224,7 +224,7 @@ DEFAULT_FROM_EMAIL = 'MSICT Ordering System <noreply@msict.mil.tz>'
 # Authentication Settings
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/admin/'
-LOGOUT_REDIRECT_URL = '/admin/login/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 # Security settings (for production)
 if not DEBUG:

@@ -176,6 +176,33 @@
             } else {
                 detailsDiv.style.display = 'none';
             }
+
+
+    if (!comment || comment.length < 10) {
+        e.preventDefault();
+        alert('Please provide a detailed comment (at least 10 characters) for the CO.');
+        return;
+    }
+    
+    if (!recommendation) {
+        e.preventDefault();
+        alert('Please select your recommendation.');
+        return;
+    }
+    
+    // Confirm submission
+    if (!confirm(`Are you sure you want to forward this request to the CO?\n\nEquipment: ${document.getElementById('selected_equipment').textContent}\nRecommendation: ${recommendation}`)) {
+        e.preventDefault();
+    }
+});
+
+// Auto-scroll to selected request
+function scrollToSelected() {
+    const selectedCard = document.querySelector('.request-card.border-success');
+    if (selectedCard) {
+        selectedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
         }
     </script>
 </body>

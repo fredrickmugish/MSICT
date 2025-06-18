@@ -7,82 +7,111 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {background-color: #f8f9fa;}
-        .sidebar {background-color: #203864; height: 100vh; color: white; position: fixed;}
-        .sidebar a {color: white; display: block; padding: 15px; text-decoration: none;}
-        .sidebar a:hover {background-color: #162b4c;}
-        .sidebar a.active {background-color: #162b4c;}
-        .content {padding: 2rem; margin-left: 220px;}
-        .card {border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
+        body { background-color: #f8f9fa; }
+        .sidebar { background-color: #203864; height: 100vh; color: white; position: fixed; width: 250px; }
+        .sidebar a { color: white; display: block; padding: 15px; text-decoration: none; transition: all 0.3s; }
+        .sidebar a:hover { background-color: #162b4c; color: #fff; }
+        .content { padding: 2rem; margin-left: 250px; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .form-floating { margin-bottom: 1rem; }
     </style>
 </head>
 <body>
-    <div class="sidebar col-md-2">
+    <div class="sidebar">
         <div class="text-center py-4">
-            <h4>DEPARTMENT</h4>
+            <h4><i class="fas fa-building me-2"></i>DEPARTMENT</h4>
+            <small class="text-muted">{{ user.get_full_name|default:user.username }}</small>
         </div>
         <a href="{% url 'department_dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
         <a href="{% url 'submit_request' %}" class="active"><i class="fas fa-plus me-2"></i> Submit Request</a>
         <a href="{% url 'department_dashboard' %}#requests-status"><i class="fas fa-list me-2"></i> My Requests</a>
-        <a href="{% url 'department_dashboard' %}#feedback"><i class="fas fa-comment me-2"></i> Feedback</a>
+        <a href="#notifications">
+            <i class="fas fa-bell me-2"></i> Notifications
+            {% if unread_responses_count > 0 %}
+              <span class="notification-badge">{{ unread_responses_count }}</span>
+            {% endif %}
+          </a>
+          <a href="#feedback"><i class="fas fa-comment me-2"></i> Feedback</a>
         <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
     </div>
 
     <div class="content">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Submit New Equipment Request</h2>
-            <a href="{% url 'department_dashboard' %}" class="btn btn-secondary">
+            <h2><i class="fas fa-plus-circle me-2"></i>Submit Equipment Request</h2>
+            <a href="{% url 'department_dashboard' %}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
             </a>
         </div>
 
-        <div class="row justify-content-center">
+        <!-- Display Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header bg-dark text-white">
-                        <i class="fas fa-plus me-2"></i>Equipment Request Form
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Equipment Request Form</h5>
                     </div>
                     <div class="card-body">
-                        {% if messages %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-
-                        <form method="post" action="{% url 'submit_request' %}">
+                        <form method="POST" action="{% url 'submit_request' %}" id="requestForm">
                             {% csrf_token %}
-                            <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-building me-2"></i>Department</label>
-                                <select name="department" class="form-control" required>
+                            
+                            <div class="form-floating">
+                                <select name="department" class="form-select" id="department" required>
                                     <option value="">Select Department</option>
                                     {% for dept in departments %}
                                         <option value="{{ dept.id }}">{{ dept.name }}</option>
                                     {% endfor %}
                                 </select>
+                                <label for="department"><i class="fas fa-building me-2"></i>Department</label>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-tools me-2"></i>Equipment Name</label>
-                                <input type="text" name="equipment" class="form-control" placeholder="Enter equipment name" required>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-floating">
+                                        <input type="text" name="equipment" class="form-control" id="equipment" placeholder="Equipment Name" required>
+                                        <label for="equipment"><i class="fas fa-box me-2"></i>Equipment Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input type="number" name="quantity" class="form-control" id="quantity" placeholder="Quantity" min="1" required>
+                                        <label for="quantity"><i class="fas fa-hashtag me-2"></i>Quantity</label>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-sort-numeric-up me-2"></i>Quantity</label>
-                                <input type="number" name="quantity" class="form-control" min="1" placeholder="Enter quantity" required>
+
+                            <div class="form-floating">
+                                <input type="text" name="specifications" class="form-control" id="specifications" placeholder="Technical Specifications">
+                                <label for="specifications"><i class="fas fa-cogs me-2"></i>Technical Specifications (Optional)</label>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label"><i class="fas fa-clipboard-list me-2"></i>Purpose</label>
-                                <textarea name="purpose" class="form-control" rows="4" placeholder="Describe the purpose for this equipment request..." required></textarea>
+
+                            <div class="form-floating">
+                                <textarea name="purpose" class="form-control" id="purpose" placeholder="Purpose" style="height: 120px" required></textarea>
+                                <label for="purpose"><i class="fas fa-clipboard-check me-2"></i>Purpose & Justification</label>
                             </div>
-                            
+
+                            <div class="form-floating">
+                                <input type="date" name="required_date" class="form-control" id="required_date">
+                                <label for="required_date"><i class="fas fa-calendar me-2"></i>Required By Date</label>
+                            </div>
+
+                            <div class="form-floating">
+                                <textarea name="additional_notes" class="form-control" id="additional_notes" placeholder="Additional Notes" style="height: 80px"></textarea>
+                                <label for="additional_notes"><i class="fas fa-sticky-note me-2"></i>Additional Notes (Optional)</label>
+                            </div>
+
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{% url 'department_dashboard' %}" class="btn btn-secondary me-md-2">
-                                    <i class="fas fa-times me-2"></i>Cancel
-                                </a>
+                                <button type="button" class="btn btn-outline-secondary me-md-2" onclick="resetForm()">
+                                    <i class="fas fa-undo me-2"></i>Reset Form
+                                </button>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-paper-plane me-2"></i>Submit Request
                                 </button>
@@ -91,9 +120,79 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-4">
+                <!-- Guidelines Card -->
+                <div class="card mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Submission Guidelines</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Provide detailed equipment specifications</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Justify the need clearly</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Set realistic required dates</li>
+                            <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Include quantity needed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Recent Requests Card -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0"><i class="fas fa-history me-2"></i>Your Recent Requests</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_requests %}
+                            {% for req in recent_requests %}
+                                <div class="border-bottom pb-2 mb-2">
+                                    <small class="text-muted">{{ req.date_submitted|date:"M d" }}</small><br>
+                                    <strong>{{ req.equipment }}</strong><br>
+                                    <span class="badge bg-{% if req.status == 'approved' %}success{% elif req.status == 'rejected' %}danger{% elif req.status == 'forwarded' %}info{% else %}warning{% endif %} badge-sm">
+                                        {{ req.get_status_display }}
+                                    </span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">No recent requests</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+                document.getElementById('requestForm').reset();
+            }
+        }
+
+        // Set minimum date to today for required_date field
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('required_date').setAttribute('min', today);
+        });
+
+        // Form validation
+        document.getElementById('requestForm').addEventListener('submit', function(e) {
+            const equipment = document.getElementById('equipment').value.trim();
+            const purpose = document.getElementById('purpose').value.trim();
+            
+            if (equipment.length < 3) {
+                e.preventDefault();
+                alert('Equipment name must be at least 3 characters long.');
+                return;
+            }
+            
+            if (purpose.length < 10) {
+                e.preventDefault();
+                alert('Purpose must be at least 10 characters long to provide adequate justification.');
+                return;
+            }
+        });
+    </script>
 </body>
 </html>
