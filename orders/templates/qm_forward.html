@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Forward to CO - MSICT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {background-color: #f8f9fa;}
+        .sidebar {background-color: #203864; height: 100vh; color: white; position: fixed;}
+        .sidebar a {color: white; display: block; padding: 15px; text-decoration: none;}
+        .sidebar a:hover {background-color: #162b4c;}
+        .sidebar a.active {background-color: #162b4c;}
+        .content {padding: 2rem; margin-left: 220px;}
+        .card {border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
+        .request-details {background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;}
+    </style>
+</head>
+<body>
+    <div class="sidebar col-md-2">
+        <div class="text-center py-4">
+            <h4>QM PANEL</h4>
+        </div>
+        <a href="{% url 'qm_dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="{% url 'qm_dashboard' %}#incoming"><i class="fas fa-inbox me-2"></i> Incoming Requests</a>
+        <a href="{% url 'qm_forward' %}" class="active"><i class="fas fa-paper-plane me-2"></i> Forward to CO</a>
+        <a href="{% url 'qm_feedbacks' %}"><i class="fas fa-comment me-2"></i> Feedback</a>
+        <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    </div>
+
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-paper-plane me-2"></i>Forward Request to CO</h2>
+            <a href="{% url 'qm_dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Display Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <i class="fas fa-paper-plane me-2"></i>Forward Request to Commanding Officer
+                    </div>
+                    <div class="card-body">
+                        {% if pending_requests %}
+                            <form method="POST" action="{% url 'forward_to_co' %}" id="forwardForm">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label class="form-label"><i class="fas fa-list me-2"></i>Select Request to Forward:</label>
+                                    <select name="request_id" class="form-select" required onchange="showRequestDetails(this)">
+                                        <option value="">Choose a request...</option>
+                                        {% for r in pending_requests %}
+                                            <option value="{{ r.id }}" 
+                                                    data-equipment="{{ r.equipment }}"
+                                                    data-quantity="{{ r.quantity }}"
+                                                    data-department="{{ r.department.name }}"
+                                                    data-purpose="{{ r.purpose }}"
+                                                    data-submitted-by="{{ r.submitted_by.username }}"
+                                                    data-date="{{ r.date_submitted|date:'M d, Y H:i' }}">
+                                                ID: {{ r.id }} - {{ r.equipment }} ({{ r.quantity }}) - {{ r.department.name }} - by {{ r.submitted_by.username }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- Request Details Preview -->
+                                <div id="requestDetails" class="request-details" style="display: none;">
+                                    <h6><i class="fas fa-info-circle me-2"></i>Request Details:</h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>Equipment:</strong> <span id="detailEquipment"></span></p>
+                                            <p><strong>Quantity:</strong> <span id="detailQuantity"></span></p>
+                                            <p><strong>Department:</strong> <span id="detailDepartment"></span></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Submitted By:</strong> <span id="detailSubmittedBy"></span></p>
+                                            <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                                        </div>
+                                    </div>
+                                    <p><strong>Purpose:</strong></p>
+                                    <p class="text-muted" id="detailPurpose"></p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label"><i class="fas fa-comment me-2"></i>Comment/Note to CO:</label>
+                                    <textarea class="form-control" name="comment" rows="4" 
+                                              placeholder="Add any comments, recommendations, or observations for the Commanding Officer..."></textarea>
+                                    <div class="form-text">Optional: Add your professional assessment or recommendations about this request.</div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{% url 'qm_dashboard' %}" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to forward this request to the CO?')">
+                                        <i class="fas fa-paper-plane me-2"></i>Forward to CO
+                                    </button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                <h4 class="text-muted">All Caught Up!</h4>
+                                <p class="text-muted">No pending requests to forward at the moment.</p>
+                                <a href="{% url 'qm_dashboard' %}" class="btn btn-primary">
+                                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% comment %} <!-- Pending Requests Summary -->
+                {% if pending_requests %}
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-list me-2"></i>Pending Requests Summary ({{ pending_requests|length }})
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Equipment</th>
+                                    <th>Department</th>
+                                    <th>Submitted By</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in pending_requests %}
+                                <tr>
+                                    <td>{{ req.id }}</td>
+                                    <td>{{ req.equipment }}</td>
+                                    <td>{{ req.department.name }}</td>
+                                    <td>{{ req.submitted_by.username }}</td>
+                                    <td>{{ req.date_submitted|date:"M d" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %} {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showRequestDetails(select) {
+            const option = select.options[select.selectedIndex];
+            const detailsDiv = document.getElementById('requestDetails');
+            
+            if (option.value) {
+                document.getElementById('detailEquipment').textContent = option.dataset.equipment;
+                document.getElementById('detailQuantity').textContent = option.dataset.quantity;
+                document.getElementById('detailDepartment').textContent = option.dataset.department;
+                document.getElementById('detailSubmittedBy').textContent = option.dataset.submittedBy;
+                document.getElementById('detailDate').textContent = option.dataset.date;
+                document.getElementById('detailPurpose').textContent = option.dataset.purpose;
+                
+                detailsDiv.style.display = 'block';
+            } else {
+                detailsDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

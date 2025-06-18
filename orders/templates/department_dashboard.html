@@ -37,6 +37,33 @@
     .form-section {
       margin-top: 2rem;
     }
+    .notification-badge {
+      position: relative;
+    }
+    .notification-badge::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 10px;
+      height: 10px;
+      background-color: #dc3545;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .response-card {
+      border-left: 4px solid #28a745;
+      background: #f8fff9;
+    }
+    .response-card.rejected {
+      border-left-color: #dc3545;
+      background: #fff8f8;
+    }
   </style>
 </head>
 <body>
@@ -45,17 +72,42 @@
     <h4>DEPARTMENT</h4>
   </div>
   <a href="#"><i class="fas fa-home me-2"></i> Dashboard</a>
-  <a href="#submit-request"><i class="fas fa-plus me-2"></i> Submit Request</a>
+  <a href="{% url 'submit_request' %}"><i class="fas fa-plus me-2"></i> Submit Request</a>
   <a href="#requests-status"><i class="fas fa-list me-2"></i> My Requests</a>
-  <a href="#feedback"><i class="fas fa-comment me-2"></i> Feedback</a>
-  <a href="#"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+  <a href="#responses" class="{% if qm_responses %}notification-badge{% endif %}">
+    <i class="fas fa-envelope me-2"></i> QM Responses
+    {% if qm_responses %}
+      <span class="badge bg-danger ms-2">{{ qm_responses.count }}</span>
+    {% endif %}
+  </a>
+  <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
 
 <div class="content">
   <h2 class="mb-4">Welcome, {{ user.username }}</h2>
 
+  <!-- Display Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- New Responses Alert -->
+  {% if qm_responses %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="fas fa-bell me-2"></i>
+      <strong>You have {{ qm_responses.count }} new response{{ qm_responses.count|pluralize }} from QM!</strong>
+      <a href="#responses" class="alert-link">View responses below</a>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endif %}
+
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card text-white bg-primary mb-3">
         <div class="card-body">
           <h5 class="card-title">Total Requests</h5>
@@ -63,7 +115,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card text-white bg-warning mb-3">
         <div class="card-body">
           <h5 class="card-title">Pending</h5>
@@ -71,7 +123,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card text-white bg-success mb-3">
         <div class="card-body">
           <h5 class="card-title">Approved</h5>
@@ -79,31 +131,12 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Submit Request Section -->
-  <div id="submit-request" class="form-section">
-    <div class="card">
-      <div class="card-header bg-dark text-white">
-        Submit New Equipment Request
-      </div>
-      <div class="card-body">
-        <form method="POST" action="/department/submit-request/">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label">Equipment Name</label>
-            <input type="text" name="equipment" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Quantity</label>
-            <input type="number" name="quantity" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Purpose</label>
-            <textarea name="purpose" class="form-control" rows="3" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit Request</button>
-        </form>
+    <div class="col-md-3">
+      <div class="card text-white bg-danger mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Rejected</h5>
+          <p class="card-text display-6">{{ rejected_requests }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -112,46 +145,238 @@
   <div id="requests-status" class="form-section">
     <div class="card">
       <div class="card-header bg-secondary text-white">
-        My Request Status
+        <i class="fas fa-list me-2"></i>My Request Status
       </div>
-      <table class="table table-striped mb-0">
-        <thead>
-          <tr>
-            <th>Equipment</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for request in my_requests %}
-          <tr>
-            <td>{{ request.equipment }}</td>
-            <td>{{ request.quantity }}</td>
-            <td>{{ request.status }}</td>
-            <td>{{ request.date_submitted }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% if my_requests %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Equipment</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Date Submitted</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for request in my_requests %}
+              <tr>
+                <td>{{ request.id }}</td>
+                <td>{{ request.equipment }}</td>
+                <td>{{ request.quantity }}</td>
+                <td>
+                  {% if request.status == 'pending' %}
+                    <span class="badge bg-warning">Pending QM Review</span>
+                  {% elif request.status == 'forwarded' %}
+                    <span class="badge bg-info">Under CO Review</span>
+                  {% elif request.status == 'approved' %}
+                    <span class="badge bg-success">Approved by CO</span>
+                  {% elif request.status == 'rejected' %}
+                    <span class="badge bg-danger">Rejected by CO</span>
+                  {% elif request.status == 'completed' %}
+                    <span class="badge bg-primary">Completed</span>
+                  {% endif %}
+                </td>
+                <td>{{ request.date_submitted|date:"M d, Y" }}</td>
+                <td>
+                  <div class="progress" style="height: 20px;">
+                    {% if request.status == 'pending' %}
+                      <div class="progress-bar bg-warning" style="width: 25%">25%</div>
+                    {% elif request.status == 'forwarded' %}
+                      <div class="progress-bar bg-info" style="width: 50%">50%</div>
+                    {% elif request.status == 'approved' %}
+                      <div class="progress-bar bg-success" style="width: 75%">75%</div>
+                    {% elif request.status == 'rejected' %}
+                      <div class="progress-bar bg-danger" style="width: 100%">Rejected</div>
+                    {% elif request.status == 'completed' %}
+                      <div class="progress-bar bg-primary" style="width: 100%">Complete</div>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="card-body text-center">
+          <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+          <p class="text-muted">You haven't submitted any requests yet.</p>
+          <a href="{% url 'submit_request' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Submit Your First Request
+          </a>
+        </div>
+      {% endif %}
     </div>
   </div>
 
-  <!-- Feedback Section -->
-  <div id="feedback" class="form-section">
+  <!-- QM Responses Section -->
+  <div id="responses" class="form-section">
     <div class="card">
-      <div class="card-header bg-info text-white">
-        Feedback from QM/CO
+      <div class="card-header bg-success text-white">
+        <i class="fas fa-envelope me-2"></i>QM Responses
+        {% if qm_responses %}
+          <span class="badge bg-light text-dark ms-2">{{ qm_responses.count }} New</span>
+        {% endif %}
       </div>
-      <ul class="list-group list-group-flush">
-        {% for note in feedbacks %}
-        <li class="list-group-item">{{ note }}</li>
-        {% endfor %}
-      </ul>
+      {% if qm_responses %}
+        <div class="card-body">
+          {% for response in qm_responses %}
+            <div class="response-card {% if response.request.status == 'rejected' %}rejected{% endif %} card mb-3">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">
+                    <i class="fas fa-tools me-2"></i>{{ response.request.equipment }}
+                    {% if response.request.status == 'approved' %}
+                      <span class="badge bg-success ms-2">Approved</span>
+                    {% elif response.request.status == 'rejected' %}
+                      <span class="badge bg-danger ms-2">Rejected</span>
+                    {% endif %}
+                  </h6>
+                  <small class="text-muted">Request ID: {{ response.request.id }}</small>
+                </div>
+                <small class="text-muted">{{ response.response_date|date:"M d, Y H:i" }}</small>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>Equipment:</strong> {{ response.request.equipment }}</p>
+                    <p class="mb-1"><strong>Quantity:</strong> {{ response.request.quantity }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>Department:</strong> {{ response.request.department }}</p>
+                    <p class="mb-1"><strong>Status:</strong> 
+                      {% if response.request.status == 'approved' %}
+                        <span class="text-success">Approved</span>
+                      {% else %}
+                        <span class="text-danger">Rejected</span>
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <h6><i class="fas fa-comment-dots me-2"></i>QM Response:</h6>
+                  <div class="p-3 bg-light rounded">
+                    {{ response.response_message }}
+                  </div>
+                </div>
+
+                {% if response.request.status == 'approved' %}
+                  <div class="alert alert-success mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Next Steps:</strong> Please follow the instructions provided by QM above to collect your equipment.
+                  </div>
+                {% else %}
+                  <div class="alert alert-danger mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Request Rejected:</strong> Please review the QM's response for alternative solutions or resubmit with modifications.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="card-body text-center">
+          <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No responses from QM yet.</p>
+          <small class="text-muted">You will receive responses here once QM processes your requests.</small>
+        </div>
+      {% endif %}
     </div>
   </div>
+
+  <!-- Request Process Flow Info -->
+  <div class="form-section">
+    <div class="card">
+      <div class="card-header bg-info text-white">
+        <i class="fas fa-info-circle me-2"></i>Request Process Flow
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-paper-plane fa-2x text-primary"></i>
+            </div>
+            <h6>1. Submit</h6>
+            <small class="text-muted">Submit your request</small>
+          </div>
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-eye fa-2x text-warning"></i>
+            </div>
+            <h6>2. QM Review</h6>
+            <small class="text-muted">QM reviews request</small>
+          </div>
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-share fa-2x text-info"></i>
+            </div>
+            <h6>3. Forward to CO</h6>
+            <small class="text-muted">QM forwards to CO</small>
+          </div>
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-gavel fa-2x text-secondary"></i>
+            </div>
+            <h6>4. CO Decision</h6>
+            <small class="text-muted">CO approves/rejects</small>
+          </div>
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-reply fa-2x text-success"></i>
+            </div>
+            <h6>5. QM Response</h6>
+            <small class="text-muted">QM responds to you</small>
+          </div>
+          <div class="col-md-2">
+            <div class="mb-2">
+              <i class="fas fa-check-circle fa-2x text-primary"></i>
+            </div>
+            <h6>6. Complete</h6>
+            <small class="text-muted">Process completed</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Auto-scroll to responses section if there are new responses
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('scroll') === 'responses' || window.location.hash === '#responses') {
+        document.getElementById('responses').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Add notification sound effect (optional)
+    const responseCount = {{ qm_responses.count|default:0 }};
+    if (responseCount > 0) {
+        // You can add a subtle notification sound here if needed
+        console.log(`You have ${responseCount} new response(s) from QM`);
+    }
+});
+
+// Function to mark responses as read (you can implement this later)
+function markAsRead(responseId) {
+    // AJAX call to mark response as read
+    // This would require additional backend implementation
+}
+
+// Auto-refresh page every 5 minutes to check for new responses
+setInterval(function() {
+    // Only refresh if user is active (optional)
+    if (document.hasFocus()) {
+        window.location.reload();
+    }
+}, 300000); // 5 minutes
+</script>
 </body>
 </html>

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-import dj_database_url
+#import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,21 +75,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'msict_ordering.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
+#Database
+#https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": dj_database_url.parse("postgresql://msict_user:0sG3NcOumz0bE6bSTPm14p9GiNlpj34p@dpg-d16lp015pdvs73ffjvmg-a.oregon-postgres.render.com/msict")
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+
+
+# DATABASES = {
+#     "default": dj_database_url.parse("postgresql://msict_user:0sG3NcOumz0bE6bSTPm14p9GiNlpj34p@dpg-d16lp015pdvs73ffjvmg-a.oregon-postgres.render.com/msict")
+# }
 
 
 
