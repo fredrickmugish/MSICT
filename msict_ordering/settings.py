@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 
 import os
+import dj_database_url
 from pathlib import Path
 #import dj_database_url
 
@@ -28,8 +29,7 @@ SECRET_KEY = 'django-insecure-qb@7-&-nj$unp9a2@p$jd_^sgp8l3sf^90d=&g-gv7+)95lm-(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -78,19 +78,29 @@ WSGI_APPLICATION = 'msict_ordering.wsgi.application'
 #Database
 #https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+# Database configuration
+# if 'DATABASE_URL' in os.environ:
+#     Production database (PostgreSQL on Render)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='postgresql://msict_k8tg_user:NUkleyrP5Bc3Wp53BPKtkJvBAU262bKQ@dpg-d19s2p6mcj7s73erg4hg-a.oregon-postgres.render.com/msict_k8tg',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
-
-
+# else:
+    # Development database (SQLite)
 # DATABASES = {
-#     "default": dj_database_url.parse("postgresql://msict_user:0sG3NcOumz0bE6bSTPm14p9GiNlpj34p@dpg-d16lp015pdvs73ffjvmg-a.oregon-postgres.render.com/msict")
-# }
-
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#             'OPTIONS': {
+#                 'timeout': 30, 
+#             }
+#         }
+#     }
 
 
 # Password validation
