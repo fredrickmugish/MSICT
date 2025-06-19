@@ -4,232 +4,369 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Department Dashboard - MSICT</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- Custom styles -->
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .sidebar {
-      background-color: #203864;
-      height: 100vh;
-      color: white;
-      position: fixed;
-    }
-    .sidebar a {
-      color: white;
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-    }
-    .sidebar a:hover {
-      background-color: #162b4c;
-    }
-    .content {
-      padding: 2rem;
-      margin-left: 220px;
-    }
-    .card {
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    .form-section {
-      margin-top: 2rem;
-    }
-    .notification-badge {
-      background-color: #dc3545;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 6px;
-      font-size: 0.75em;
-      margin-left: 5px;
-    }
     .unread-notification {
       background-color: #fff3cd;
       border-left: 4px solid #ffc107;
     }
+    .brand-link {
+      border-bottom: none !important;
+    }
+    .user-panel {
+      border-bottom: none !important;
+    }
+    .nav-sidebar .nav-item>.nav-link {
+      margin-bottom: 0;
+    }
+    .info-box {
+      cursor: default;
+    }
+    .card-header {
+      border-bottom: 1px solid rgba(0,0,0,.125);
+    }
   </style>
 </head>
-<body>
-<div class="sidebar col-md-2">
-  <div class="text-center py-4">
-    <h4>DEPARTMENT</h4>
-  </div>
-  <a href="#"><i class="fas fa-home me-2"></i> Dashboard</a>
-  <a href="{% url 'submit_request' %}"><i class="fas fa-plus me-2"></i> Submit Request</a>
-  <a href=""><i class="fas fa-list me-2"></i> My Requests</a>
-  <a href="#notifications">
-    <i class="fas fa-bell me-2"></i> Notifications
-    {% if unread_responses_count > 0 %}
-      <span class="notification-badge">{{ unread_responses_count }}</span>
-    {% endif %}
-  </a>
-  <a href="#feedback"><i class="fas fa-comment me-2"></i> Feedback</a>
-  <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</div>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
 
-<div class="content">
-  <h2 class="mb-4">Welcome, {{ user.username }}</h2>
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Home</a>
+      </li>
+    </ul>
 
-  <!-- Display Messages -->
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  <div class="row">
-    <div class="col-md-3">
-      <div class="card text-white bg-primary mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Total Requests</h5>
-          <p class="card-text display-6">{{ total_requests }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-white bg-warning mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Pending</h5>
-          <p class="card-text display-6">{{ pending_requests }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-white bg-success mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Approved</h5>
-          <p class="card-text display-6">{{ approved_requests }}</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-white bg-danger mb-3">
-        <div class="card-body">
-          <h5 class="card-title">Rejected</h5>
-          <p class="card-text display-6">{{ rejected_count }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Notifications Section -->
-  {% if qm_responses %}
-  <div id="notifications" class="form-section">
-    <div class="card">
-      <div class="card-header bg-warning text-dark">
-        <i class="fas fa-bell me-2"></i>New Responses from QM
-        <span class="badge bg-danger ms-2">{{ unread_responses_count }} Unread</span>
-      </div>
-      <div class="card-body">
-        {% for response in qm_responses %}
-        <div class="alert {% if not response.is_read_by_department %}unread-notification{% else %}alert-light{% endif %} d-flex justify-content-between align-items-start" id="response-{{ response.id }}">
-          <div>
-            <h6 class="alert-heading">Response for: {{ response.request.equipment }}</h6>
-            <p class="mb-1">{{ response.response_message }}</p>
-            {% if response.pickup_instructions %}
-              <p class="mb-1"><strong>Pickup Instructions:</strong> {{ response.pickup_instructions }}</p>
-            {% endif %}
-            {% if response.expected_delivery_date %}
-              <p class="mb-1"><strong>Expected Delivery:</strong> {{ response.expected_delivery_date|date:"M d, Y" }}</p>
-            {% endif %}
-            <small class="text-muted">{{ response.response_date|date:"M d, Y H:i" }} by {{ response.responded_by.username }}</small>
-          </div>
-          {% if not response.is_read_by_department %}
-          <button class="btn btn-sm btn-outline-primary" onclick="markAsRead({{ response.id }})">
-            <i class="fas fa-check"></i> Mark as Read
-          </button>
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          {% if unread_responses_count > 0 %}
+            <span class="badge badge-warning navbar-badge">{{ unread_responses_count }}</span>
           {% endif %}
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">{{ unread_responses_count }} New Responses</span>
+          <div class="dropdown-divider"></div>
+          <a href="#notifications" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> View all responses
+          </a>
         </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  {% endif %}
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
 
-  <!-- My Requests Section -->
-  <div id="requests-status" class="form-section">
-    <div class="card">
-      <div class="card-header bg-secondary text-white">
-        <i class="fas fa-list me-2"></i>My Request Status
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped mb-0">
-          <thead>
-            <tr>
-              <th>Request #</th>
-              <th>Equipment</th>
-              <th>Quantity</th>
-              <th>Status</th>
-              <th>Date Submitted</th>
-              <th>Days Pending</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for request in my_requests %}
-            <tr>
-              <td>{{ request.request_number }}</td>
-              <td>{{ request.equipment }}</td>
-              <td>{{ request.quantity }}</td>
-              <td>
-                <span class="badge 
-                  {% if request.status == 'approved' %}bg-success
-                  {% elif request.status == 'rejected' %}bg-danger
-                  {% elif request.status == 'forwarded' %}bg-info
-                  {% else %}bg-warning{% endif %}">
-                  {{ request.get_status_display }}
-                </span>
-              </td>
-              <td>{{ request.date_submitted|date:"M d, Y" }}</td>
-              <td>{{ request.days_pending }} days</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="7" class="text-center text-muted">No requests submitted yet.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="#" class="brand-link text-center">
+      <span class="brand-text font-weight-light">DEPARTMENT DASHBOARD</span>
+    </a>
 
-  <!-- Feedback Section -->
-  <div id="feedback" class="form-section">
-    <div class="card">
-      <div class="card-header bg-info text-white">
-        <i class="fas fa-comment me-2"></i>Recent Updates & Feedback
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="info">
+          <a href="#" class="d-block">{{ user.username }}</a>
+        </div>
       </div>
-      <div class="card-body">
-        {% if feedbacks %}
-          <ul class="list-group list-group-flush">
-            {% for feedback in feedbacks %}
-            <li class="list-group-item">
-              <div class="d-flex w-100 justify-content-between">
-                <h6 class="mb-1">{{ feedback.subject }}</h6>
-                <small>{{ feedback.date_sent|date:"M d, Y" }}</small>
-              </div>
-              <p class="mb-1">{{ feedback.message }}</p>
-              <small class="text-muted">From: {{ feedback.sent_by.get_full_name|default:feedback.sent_by.username }}</small>
-            </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <div class="text-center text-muted py-4">
-            <i class="fas fa-inbox fa-3x mb-3"></i>
-            <p>No feedback or updates available.</p>
-          </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-home"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'submit_request' %}" class="nav-link">
+              <i class="nav-icon fas fa-plus"></i>
+              <p>Submit Request</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-list"></i>
+              <p>My Requests</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#notifications" class="nav-link">
+              <i class="nav-icon fas fa-bell"></i>
+              <p>Notifications</p>
+              {% if unread_responses_count > 0 %}
+                <span class="right badge badge-danger">{{ unread_responses_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#feedback" class="nav-link">
+              <i class="nav-icon fas fa-comment"></i>
+              <p>Feedback</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'logout' %}" class="nav-link">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Welcome, {{ user.username }}</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Display Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
         {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Info boxes -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-file-alt"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Total Requests</span>
+                <span class="info-box-number">{{ total_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-clock"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Pending</span>
+                <span class="info-box-number">{{ pending_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Approved</span>
+                <span class="info-box-number">{{ approved_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-times-circle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Rejected</span>
+                <span class="info-box-number">{{ rejected_count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Section -->
+        {% if qm_responses %}
+        <div id="notifications" class="card card-warning card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-bell mr-2"></i>New Responses from QM</h3>
+            <div class="card-tools">
+              <span class="badge badge-danger">{{ unread_responses_count }} Unread</span>
+            </div>
+          </div>
+          <div class="card-body">
+            {% for response in qm_responses %}
+            <div class="callout {% if not response.is_read_by_department %}callout-warning{% else %}callout-info{% endif %} d-flex justify-content-between align-items-start" id="response-{{ response.id }}">
+              <div>
+                <h5>Response for: {{ response.request.equipment }}</h5>
+                <p>{{ response.response_message }}</p>
+                {% if response.pickup_instructions %}
+                  <p><strong>Pickup Instructions:</strong> {{ response.pickup_instructions }}</p>
+                {% endif %}
+                {% if response.expected_delivery_date %}
+                  <p><strong>Expected Delivery:</strong> {{ response.expected_delivery_date|date:"M d, Y" }}</p>
+                {% endif %}
+                <small class="text-muted">{{ response.response_date|date:"M d, Y H:i" }} by {{ response.responded_by.username }}</small>
+              </div>
+              {% if not response.is_read_by_department %}
+              <button class="btn btn-sm btn-outline-primary" onclick="markAsRead({{ response.id }})">
+                <i class="fas fa-check"></i> Mark as Read
+              </button>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- My Requests Section -->
+        <div id="requests-status" class="card card-secondary card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-list mr-2"></i>My Request Status</h3>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Request #</th>
+                    <th>Equipment</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Date Submitted</th>
+                    <th>Days Pending</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for request in my_requests %}
+                  <tr>
+                    <td>{{ request.request_number }}</td>
+                    <td>{{ request.equipment }}</td>
+                    <td>{{ request.quantity }}</td>
+                    <td>
+                      <span class="badge 
+                        {% if request.status == 'approved' %}bg-success
+                        {% elif request.status == 'rejected' %}bg-danger
+                        {% elif request.status == 'forwarded' %}bg-info
+                        {% else %}bg-warning{% endif %}">
+                        {{ request.get_status_display }}
+                      </span>
+                    </td>
+                    <td>{{ request.date_submitted|date:"M d, Y" }}</td>
+                    <td>{{ request.days_pending }} days</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="7" class="text-center text-muted">No requests submitted yet.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div id="feedback" class="card card-info card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-comment mr-2"></i>Recent Updates & Feedback</h3>
+          </div>
+          <div class="card-body">
+            {% if feedbacks %}
+              <div class="timeline">
+                {% for feedback in feedbacks %}
+                <div>
+                  <i class="fas fa-envelope bg-blue"></i>
+                  <div class="timeline-item">
+                    <span class="time"><i class="fas fa-clock"></i> {{ feedback.date_sent|date:"M d, Y" }}</span>
+                    <h3 class="timeline-header">{{ feedback.subject }}</h3>
+                    <div class="timeline-body">
+                      {{ feedback.message }}
+                    </div>
+                    <div class="timeline-footer">
+                      <small class="text-muted">From: {{ feedback.sent_by.get_full_name|default:feedback.sent_by.username }}</small>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div>
+                  <i class="fas fa-clock bg-gray"></i>
+                </div>
+              </div>
+            {% else %}
+              <div class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>No feedback or updates available.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    <div class="p-3">
+      <h5>Quick Actions</h5>
+      <a href="{% url 'submit_request' %}" class="btn btn-primary btn-block mb-2">
+        <i class="fas fa-plus mr-2"></i>Submit New Request
+      </a>
+    </div>
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline">
+      MSICT Department Portal
+    </div>
+    <strong>Copyright &copy; {% now "Y" %} <a href="#">MSICT</a>.</strong> All rights reserved.
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
 <script>
 function markAsRead(responseId) {
     fetch(`{% url 'mark_response_read' 0 %}`.replace('0', responseId), {
@@ -242,10 +379,10 @@ function markAsRead(responseId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove the unread styling and hide the mark as read button
+            // Update the notification styling
             const responseElement = document.getElementById(`response-${responseId}`);
-            responseElement.classList.remove('unread-notification');
-            responseElement.classList.add('alert-light');
+            responseElement.classList.remove('callout-warning');
+            responseElement.classList.add('callout-info');
             
             // Hide the mark as read button
             const button = responseElement.querySelector('button');
@@ -253,14 +390,25 @@ function markAsRead(responseId) {
                 button.style.display = 'none';
             }
             
-            // Update notification badge
-            const badge = document.querySelector('.notification-badge');
-            if (badge) {
-                const currentCount = parseInt(badge.textContent);
+            // Update notification badge in sidebar
+            const sidebarBadge = document.querySelector('.nav-sidebar .badge-danger');
+            if (sidebarBadge) {
+                const currentCount = parseInt(sidebarBadge.textContent);
                 if (currentCount > 1) {
-                    badge.textContent = currentCount - 1;
+                    sidebarBadge.textContent = currentCount - 1;
                 } else {
-                    badge.style.display = 'none';
+                    sidebarBadge.remove();
+                }
+            }
+            
+            // Update notification badge in navbar
+            const navbarBadge = document.querySelector('.navbar-badge');
+            if (navbarBadge) {
+                const currentCount = parseInt(navbarBadge.textContent);
+                if (currentCount > 1) {
+                    navbarBadge.textContent = currentCount - 1;
+                } else {
+                    navbarBadge.remove();
                 }
             }
             
@@ -278,23 +426,28 @@ function markAsRead(responseId) {
 
 function showAlert(type, message) {
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.className = `alert alert-${type} alert-dismissible`;
     alertDiv.innerHTML = `
         ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     `;
     
     // Insert at the top of the content
-    const content = document.querySelector('.content');
-    content.insertBefore(alertDiv, content.children[1]);
+    const contentHeader = document.querySelector('.content-header');
+    contentHeader.parentNode.insertBefore(alertDiv, contentHeader.nextSibling);
     
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
+        $(alertDiv).alert('close');
     }, 5000);
 }
+
+// Initialize AdminLTE components
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+});
 </script>
 </body>
 </html>

@@ -4,302 +4,404 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CO Dashboard - MSICT</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- Custom styles -->
   <style>
-    body { background-color: #f8f9fa; }
-    .sidebar { background-color: #203864; height: 100vh; color: white; position: fixed; width: 250px; }
-    .sidebar a { color: white; display: block; padding: 15px; text-decoration: none; transition: all 0.3s; }
-    .sidebar a:hover, .sidebar a.active { background-color: #162b4c; color: #fff; }
-    .content { padding: 2rem; margin-left: 250px; }
-    .card { border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; }
-    .stat-card { transition: transform 0.2s; }
-    .stat-card:hover { transform: translateY(-5px); }
-    .priority-urgent { border-left: 4px solid #dc3545; animation: pulse 2s infinite; }
+    .priority-urgent { 
+      border-left: 4px solid #dc3545;
+      animation: pulse 2s infinite;
+    }
     .priority-high { border-left: 4px solid #fd7e14; }
     .priority-medium { border-left: 4px solid #ffc107; }
     .priority-low { border-left: 4px solid #28a745; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+    @keyframes pulse { 
+      0% { opacity: 1; } 
+      50% { opacity: 0.7; } 
+      100% { opacity: 1; } 
+    }
     .decision-card { border-left: 4px solid #6c757d; }
+    .info-box-icon { display: flex; align-items: center; justify-content: center; }
+    .info-box-icon i { font-size: 1.8rem; }
+    .table-responsive { overflow-x: auto; }
   </style>
 </head>
-<body>
-<div class="sidebar">
-  <div class="text-center py-4">
-    <h4><i class="fas fa-star me-2"></i>CO PANEL</h4>
-    <small class="text-muted">{{ user.get_full_name|default:user.username }}</small>
-  </div>
-  <a href="#dashboard" class="active"><i class="fas fa-home me-2"></i> Dashboard</a>
-  <a href="#review"><i class="fas fa-tasks me-2"></i> Review Requests</a>
-  <a href="#history"><i class="fas fa-history me-2"></i> Decision History</a>
-  <a href="#feedback"><i class="fas fa-comment me-2"></i> Send Feedback</a>
-  <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</div>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
 
-<div class="content">
-  <div id="dashboard">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Commanding Officer Dashboard</h2>
-      <button class="btn btn-outline-primary" onclick="refreshStats()">
-        <i class="fas fa-sync-alt me-2"></i>Refresh
-      </button>
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Home</a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <div class="brand-link text-center">
+      <span class="brand-text font-weight-light"><i class="fas fa-star mr-2"></i>CO PANEL</span>
     </div>
 
-    <!-- Display Messages -->
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="info">
+          <a href="#" class="d-block">{{ user.get_full_name|default:user.username }}</a>
         </div>
-      {% endfor %}
-    {% endif %}
+      </div>
 
-    <!-- Statistics Cards -->
-    <div class="row">
-      <div class="col-md-2">
-        <div class="card text-white bg-primary stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-clipboard-list fa-2x mb-2"></i>
-            <h6 class="card-title">Total Requests</h6>
-            <p class="card-text display-6">{{ total_requests }}</p>
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="#dashboard" class="nav-link active">
+              <i class="nav-icon fas fa-home"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#review" class="nav-link">
+              <i class="nav-icon fas fa-tasks"></i>
+              <p>Review Requests</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#history" class="nav-link">
+              <i class="nav-icon fas fa-history"></i>
+              <p>Decision History</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#feedback" class="nav-link">
+              <i class="nav-icon fas fa-comment"></i>
+              <p>Send Feedback</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'logout' %}" class="nav-link">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Commanding Officer Dashboard</h1>
           </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card text-white bg-warning stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-clock fa-2x mb-2"></i>
-            <h6 class="card-title">Pending Review</h6>
-            <p class="card-text display-6">{{ pending_requests }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card text-white bg-success stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-check-circle fa-2x mb-2"></i>
-            <h6 class="card-title">Approved</h6>
-            <p class="card-text display-6">{{ approved_requests }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card text-white bg-danger stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-times-circle fa-2x mb-2"></i>
-            <h6 class="card-title">Rejected</h6>
-            <p class="card-text display-6">{{ rejected_requests }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card text-white bg-dark stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-flag-checkered fa-2x mb-2"></i>
-            <h6 class="card-title">Completed</h6>
-            <p class="card-text display-6">{{ completed_requests }}</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2">
-        <div class="card text-white bg-info stat-card">
-          <div class="card-body text-center">
-            <i class="fas fa-percentage fa-2x mb-2"></i>
-            <h6 class="card-title">Approval Rate</h6>
-            <p class="card-text display-6">
-              {% if total_requests > 0 %}
-                {{ approved_requests|floatformat:0 }}%
-              {% else %}
-                0%
-              {% endif %}
-            </p>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Review Requests Section -->
-  <div id="review" class="form-section">
-    <div class="card">
-      <div class="card-header bg-warning text-dark">
-        <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Equipment Requests Awaiting Review</h5>
-      </div>
-      <div class="card-body p-0">
-        {% if review_list %}
-          <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th>Request #</th>
-                  <th>Department</th>
-                  <th>Equipment</th>
-                  <th>Quantity</th>
-                  <th>Purpose</th>
-                  <th>QM Note</th>
-                  <th>QM Recommendation</th>
-                  <th>Submitted</th>
-                  <th>Days</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for request in review_list %}
-                <tr class="priority-{{ request.priority }}">
-                  <td><strong>{{ request.request_number }}</strong></td>
-                  <td>{{ request.department }}</td>
-                  <td>{{ request.equipment }}</td>
-                  <td>{{ request.quantity }}</td>
-                  <td>{{ request.purpose|truncatewords:8 }}</td>
-                  <td>
-                    {% if request.qm_note %}
-                      <small>{{ request.qm_note.note|truncatewords:6 }}</small>
-                    {% else %}
-                      <em class="text-muted">No note</em>
-                    {% endif %}
-                  </td>
-                  <td>
-                    {% if request.qm_note %}
-                      <span class="badge bg-{% if request.qm_note.recommendation == 'approve' %}success{% elif request.qm_note.recommendation == 'reject' %}danger{% else %}warning{% endif %}">
-                        {{ request.qm_note.get_recommendation_display }}
-                      </span>
-                    {% else %}
-                      <span class="badge bg-secondary">No recommendation</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ request.date_submitted|date:"M d, Y" }}</td>
-                  <td>
-                    <span class="{% if request.days_pending > 7 %}text-danger{% elif request.days_pending > 3 %}text-warning{% endif %}">
-                      {{ request.days_pending }} days
-                    </span>
-                  </td>
-                  <td>
-                    <div class="btn-group" role="group">
-                      <button class="btn btn-sm btn-success" onclick="makeDecision({{ request.id }}, 'approve', '{{ request.equipment|escapejs }}')">
-                        <i class="fas fa-check"></i>
-                      </button>
-                      <button class="btn btn-sm btn-danger" onclick="makeDecision({{ request.id }}, 'reject', '{{ request.equipment|escapejs }}')">
-                        <i class="fas fa-times"></i>
-                      </button>
-                      <button class="btn btn-sm btn-outline-info" onclick="viewFullDetails({{ request.id }})">
-                        <i class="fas fa-eye"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <div class="text-center py-5">
-            <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No requests pending your review.</p>
-          </div>
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <!-- Display Messages -->
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
         {% endif %}
-      </div>
-    </div>
-  </div>
 
-  <!-- Decision History Section -->
-  <div id="history" class="form-section">
-    <div class="card">
-      <div class="card-header bg-secondary text-white">
-        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Decision History</h5>
-      </div>
-      <div class="card-body">
-        {% if recent_decisions %}
-          {% for decision in recent_decisions %}
-            <div class="card decision-card mb-3">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-8">
-                    <h6 class="card-title mb-1">
-                      {{ decision.request.equipment }} 
-                      <small class="text-muted">({{ decision.request.request_number }})</small>
-                    </h6>
-                    <p class="card-text mb-1">
-                      <strong>Department:</strong> {{ decision.request.department }} |
-                      <strong>Quantity:</strong> {{ decision.request.quantity }} |
-                      <strong>Submitted by:</strong> {{ decision.request.submitted_by.get_full_name|default:decision.request.submitted_by.username }}
-                    </p>
-                    {% if decision.reason %}
-                      <p class="card-text mb-1"><strong>Reason:</strong> {{ decision.reason }}</p>
-                    {% endif %}
-                    {% if decision.additional_notes %}
-                      <p class="card-text mb-1"><strong>Notes:</strong> {{ decision.additional_notes }}</p>
-                    {% endif %}
+        <!-- Statistics Cards -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-primary"><i class="fas fa-clipboard-list"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Total Requests</span>
+                <span class="info-box-number">{{ total_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Pending Review</span>
+                <span class="info-box-number">{{ pending_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-success"><i class="fas fa-check-circle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Approved</span>
+                <span class="info-box-number">{{ approved_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-danger"><i class="fas fa-times-circle"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Rejected</span>
+                <span class="info-box-number">{{ rejected_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-dark"><i class="fas fa-flag-checkered"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Completed</span>
+                <span class="info-box-number">{{ completed_requests }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="info-box">
+              <span class="info-box-icon bg-info"><i class="fas fa-percentage"></i></span>
+              <div class="info-box-content">
+                <span class="info-box-text">Approval Rate</span>
+                <span class="info-box-number">
+                  {% if total_requests > 0 %}
+                    {{ approved_requests|floatformat:0 }}%
+                  {% else %}
+                    0%
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Requests Section -->
+        <div id="review" class="card card-warning card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-tasks mr-2"></i>Equipment Requests Awaiting Review</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" onclick="refreshStats()">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            {% if review_list %}
+              <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th>Request #</th>
+                      <th>Department</th>
+                      <th>Equipment</th>
+                      <th>Quantity</th>
+                      <th>Purpose</th>
+                      <th>QM Note</th>
+                      <th>QM Recommendation</th>
+                      <th>Submitted</th>
+                      <th>Days</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for request in review_list %}
+                    <tr class="priority-{{ request.priority }}">
+                      <td><strong>{{ request.request_number }}</strong></td>
+                      <td>{{ request.department }}</td>
+                      <td>{{ request.equipment }}</td>
+                      <td>{{ request.quantity }}</td>
+                      <td>{{ request.purpose|truncatewords:8 }}</td>
+                      <td>
+                        {% if request.qm_note %}
+                          <small>{{ request.qm_note.note|truncatewords:6 }}</small>
+                        {% else %}
+                          <em class="text-muted">No note</em>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if request.qm_note %}
+                          <span class="badge bg-{% if request.qm_note.recommendation == 'approve' %}success{% elif request.qm_note.recommendation == 'reject' %}danger{% else %}warning{% endif %}">
+                            {{ request.qm_note.get_recommendation_display }}
+                          </span>
+                        {% else %}
+                          <span class="badge bg-secondary">No recommendation</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ request.date_submitted|date:"M d, Y" }}</td>
+                      <td>
+                        <span class="{% if request.days_pending > 7 %}text-danger{% elif request.days_pending > 3 %}text-warning{% endif %}">
+                          {{ request.days_pending }} days
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group" role="group">
+                          <button class="btn btn-sm btn-success" onclick="makeDecision({{ request.id }}, 'approve', '{{ request.equipment|escapejs }}')">
+                            <i class="fas fa-check"></i>
+                          </button>
+                          <button class="btn btn-sm btn-danger" onclick="makeDecision({{ request.id }}, 'reject', '{{ request.equipment|escapejs }}')">
+                            <i class="fas fa-times"></i>
+                          </button>
+                          <button class="btn btn-sm btn-info" onclick="viewFullDetails({{ request.id }})">
+                            <i class="fas fa-eye"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No requests pending your review.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Decision History Section -->
+        <div id="history" class="card card-secondary card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-history mr-2"></i>Recent Decision History</h3>
+          </div>
+          <div class="card-body">
+            {% if recent_decisions %}
+              {% for decision in recent_decisions %}
+                <div class="card decision-card mb-3">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <h6 class="card-title mb-1">
+                          {{ decision.request.equipment }} 
+                          <small class="text-muted">({{ decision.request.request_number }})</small>
+                        </h6>
+                        <p class="card-text mb-1">
+                          <strong>Department:</strong> {{ decision.request.department }} |
+                          <strong>Quantity:</strong> {{ decision.request.quantity }} |
+                          <strong>Submitted by:</strong> {{ decision.request.submitted_by.get_full_name|default:decision.request.submitted_by.username }}
+                        </p>
+                        {% if decision.reason %}
+                          <p class="card-text mb-1"><strong>Reason:</strong> {{ decision.reason }}</p>
+                        {% endif %}
+                        {% if decision.additional_notes %}
+                          <p class="card-text mb-1"><strong>Notes:</strong> {{ decision.additional_notes }}</p>
+                        {% endif %}
+                      </div>
+                      <div class="col-md-4 text-right">
+                        <span class="badge bg-{% if decision.decision == 'approved' %}success{% else %}danger{% endif %} mb-2">
+                          {{ decision.decision|title }}
+                        </span>
+                        <br>
+                        <small class="text-muted">{{ decision.decision_date|date:"M d, Y H:i" }}</small>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-md-4 text-end">
-                    <span class="badge bg-{% if decision.decision == 'approved' %}success{% else %}danger{% endif %} mb-2">
-                      {{ decision.decision|title }}
-                    </span>
-                    <br>
-                    <small class="text-muted">{{ decision.decision_date|date:"M d, Y H:i" }}</small>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4">
+                <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No decisions made yet.</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Send Feedback Section -->
+        <div id="feedback" class="card card-info card-outline mt-4">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-comment mr-2"></i>Send Feedback to QM</h3>
+          </div>
+          <div class="card-body">
+            <form action="{% url 'send_feedback' %}" method="POST">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Subject:</label>
+                    <input type="text" class="form-control" name="subject" placeholder="Enter feedback subject" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Feedback Type:</label>
+                    <select class="form-control" name="feedback_type" required>
+                      <option value="general">General Feedback</option>
+                      <option value="policy">Policy Clarification</option>
+                      <option value="process">Process Improvement</option>
+                      <option value="urgent">Urgent Matter</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <div class="text-center py-4">
-            <i class="fas fa-history fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No decisions made yet.</p>
+              <div class="form-group">
+                <label>Feedback Message:</label>
+                <textarea class="form-control" name="message" rows="4" placeholder="Enter your feedback message..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane mr-2"></i>Send Feedback
+              </button>
+            </form>
           </div>
-        {% endif %}
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Send Feedback Section -->
-  <div id="feedback" class="form-section">
-    <div class="card">
-      <div class="card-header bg-info text-white">
-        <h5 class="mb-0"><i class="fas fa-comment me-2"></i>Send Feedback to QM</h5>
-      </div>
-      <div class="card-body">
-        <form action="{% url 'send_feedback' %}" method="POST">
-          {% csrf_token %}
-          <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label">Subject:</label>
-                <input type="text" class="form-control" name="subject" placeholder="Enter feedback subject" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="form-label">Feedback Type:</label>
-                <select class="form-select" name="feedback_type" required>
-                  <option value="general">General Feedback</option>
-                  <option value="policy">Policy Clarification</option>
-                  <option value="process">Process Improvement</option>
-                  <option value="urgent">Urgent Matter</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Feedback Message:</label>
-            <textarea class="form-control" name="message" rows="4" placeholder="Enter your feedback message..." required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-paper-plane me-2"></i>Send Feedback
-          </button>
-        </form>
-      </div>
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline">
+      MSICT CO Portal
     </div>
-  </div>
+    <strong>Copyright &copy; {% now "Y" %} <a href="#">MSICT</a>.</strong> All rights reserved.
+  </footer>
 </div>
 
 <!-- Decision Modal -->
-<div class="modal fade" id="decisionModal" tabindex="-1">
+<div class="modal fade" id="decisionModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header" id="decision-modal-header">
-        <h5 class="modal-title" id="decision-modal-title">Make Decision</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <h4 class="modal-title"><i class="fas fa-gavel mr-2"></i>Make Decision</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <form action="{% url 'co_action' %}" method="POST">
         {% csrf_token %}
@@ -308,35 +410,35 @@
           <input type="hidden" id="decision-action" name="action">
           
           <div class="alert" id="decision-alert">
-            <i class="fas fa-info-circle me-2"></i>
+            <i class="fas fa-info-circle mr-2"></i>
             You are about to <strong id="decision-action-text"></strong> the request for: <strong id="decision-equipment-name"></strong>
           </div>
           
-          <div class="mb-3">
-            <label class="form-label">Reason for Decision:</label>
+          <div class="form-group">
+            <label>Reason for Decision:</label>
             <textarea class="form-control" name="reason" rows="3" placeholder="Provide reason for your decision..." required></textarea>
           </div>
           
-          <div class="mb-3">
-            <label class="form-label">Additional Notes (Optional):</label>
+          <div class="form-group">
+            <label>Additional Notes (Optional):</label>
             <textarea class="form-control" name="additional_notes" rows="2" placeholder="Any additional comments or instructions..."></textarea>
           </div>
           
           <div id="approval-fields" style="display: none;">
-            <div class="mb-3">
-              <label class="form-label">Budget Allocation:</label>
+            <div class="form-group">
+              <label>Budget Allocation:</label>
               <input type="number" class="form-control" name="budget_allocation" step="0.01" placeholder="0.00">
             </div>
-            <div class="mb-3">
-              <label class="form-label">Expected Procurement Date:</label>
+            <div class="form-group">
+              <label>Expected Procurement Date:</label>
               <input type="date" class="form-control" name="expected_procurement_date">
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn" id="decision-submit-btn">
-            <i class="fas fa-gavel me-2"></i>Confirm Decision
+            <i class="fas fa-gavel mr-2"></i>Confirm Decision
           </button>
         </div>
       </form>
@@ -345,12 +447,14 @@
 </div>
 
 <!-- Request Details Modal -->
-<div class="modal fade" id="requestDetailsModal" tabindex="-1">
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
-        <h5 class="modal-title">Request Details</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <h4 class="modal-title"><i class="fas fa-info-circle mr-2"></i>Request Details</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body" id="requestDetailsContent">
         <!-- Content will be loaded here -->
@@ -359,7 +463,14 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
 <script>
 function makeDecision(requestId, action, equipmentName) {
     document.getElementById('decision-request-id').value = requestId;
@@ -367,7 +478,6 @@ function makeDecision(requestId, action, equipmentName) {
     document.getElementById('decision-equipment-name').textContent = equipmentName;
     document.getElementById('decision-action-text').textContent = action.toUpperCase();
     
-    const modal = document.getElementById('decisionModal');
     const header = document.getElementById('decision-modal-header');
     const submitBtn = document.getElementById('decision-submit-btn');
     const alert = document.getElementById('decision-alert');
@@ -385,7 +495,7 @@ function makeDecision(requestId, action, equipmentName) {
         approvalFields.style.display = 'none';
     }
     
-    new bootstrap.Modal(modal).show();
+    $('#decisionModal').modal('show');
 }
 
 function viewFullDetails(requestId) {
@@ -395,7 +505,7 @@ function viewFullDetails(requestId) {
             const content = `
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>Request Information</h6>
+                        <h5>Request Information</h5>
                         <table class="table table-sm">
                             <tr><td><strong>Request Number:</strong></td><td>${data.request_number || 'N/A'}</td></tr>
                             <tr><td><strong>Equipment:</strong></td><td>${data.equipment || 'N/A'}</td></tr>
@@ -406,7 +516,7 @@ function viewFullDetails(requestId) {
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <h6>Timeline</h6>
+                        <h5>Timeline</h5>
                         <table class="table table-sm">
                             <tr><td><strong>Submitted:</strong></td><td>${data.date_submitted || 'N/A'}</td></tr>
                             <tr><td><strong>Last Updated:</strong></td><td>${data.last_updated || 'N/A'}</td></tr>
@@ -416,14 +526,14 @@ function viewFullDetails(requestId) {
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
-                        <h6>Purpose</h6>
+                        <h5>Purpose</h5>
                         <p class="border p-3 bg-light">${data.purpose || 'No purpose specified'}</p>
                     </div>
                 </div>
                 ${data.qm_note ? `
                 <div class="row mt-3">
                     <div class="col-12">
-                        <h6>QM Note</h6>
+                        <h5>QM Note</h5>
                         <div class="border p-3 bg-info bg-opacity-10">
                             <p><strong>Recommendation:</strong> ${data.qm_recommendation || 'None'}</p>
                             <p><strong>Note:</strong> ${data.qm_note}</p>
@@ -434,7 +544,7 @@ function viewFullDetails(requestId) {
                 ` : ''}
             `;
             document.getElementById('requestDetailsContent').innerHTML = content;
-            new bootstrap.Modal(document.getElementById('requestDetailsModal')).show();
+            $('#requestDetailsModal').modal('show');
         })
         .catch(error => {
             console.error('Error:', error);
@@ -455,6 +565,11 @@ function refreshStats() {
 setInterval(() => {
     refreshStats();
 }, 120000);
+
+// Initialize AdminLTE components
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+});
 </script>
 </body>
 </html>
