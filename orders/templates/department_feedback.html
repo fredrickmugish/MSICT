@@ -1,0 +1,62 @@
+{% extends "department_base.html" %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Feedback & Updates</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'department_dashboard' %}">Home</a></li>
+          <li class="breadcrumb-item active">Feedback</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="content">
+  <div class="container-fluid">
+    {% include 'messages.html' %}
+    
+    <div class="card card-info card-outline">
+      <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-comment mr-2"></i>Recent Updates & Feedback</h3>
+      </div>
+      <div class="card-body">
+        {% if feedbacks %}
+          <div class="timeline">
+            {% for feedback in feedbacks %}
+            <div>
+              <i class="fas fa-envelope bg-blue"></i>
+              <div class="timeline-item">
+                <span class="time"><i class="fas fa-clock"></i> {{ feedback.date_sent|date:"M d, Y" }}</span>
+                <h3 class="timeline-header">{{ feedback.subject }}</h3>
+                <div class="timeline-body">
+                  {{ feedback.message }}
+                </div>
+                <div class="timeline-footer">
+                  <small class="text-muted">From: {{ feedback.sent_by.get_full_name|default:feedback.sent_by.username }}</small>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            <div>
+              <i class="fas fa-clock bg-gray"></i>
+            </div>
+          </div>
+        {% else %}
+          <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No feedback or updates available.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

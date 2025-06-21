@@ -1,0 +1,19 @@
+<!-- templates/co_decisions.html -->
+{% extends "base_qm.html" %}
+
+{% block title %}CO Decisions - QM Dashboard{% endblock %}
+{% block page_title %}CO Decisions - Awaiting Response{% endblock %}
+{% block breadcrumb_active %}CO Decisions{% endblock %}
+
+{% block content %}
+<div class="card card-secondary card-outline">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-gavel mr-2"></i>CO Decisions - Awaiting Response</h3>
+  </div>
+  {% if co_decided_requests %}
+    <!-- Full CO decisions table -->
+  {% else %}
+    <!-- No decisions message -->
+  {% endif %}
+</div>
+{% endblock %}

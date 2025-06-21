@@ -23,8 +23,8 @@
             <h4>QM PANEL</h4>
         </div>
         <a href="{% url 'qm_dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
-        <a href="{% url 'qm_dashboard' %}#incoming"><i class="fas fa-inbox me-2"></i> Incoming Requests</a>
-        <a href="{% url 'qm_forward' %}" class="active"><i class="fas fa-paper-plane me-2"></i> Forward to CO</a>
+        <a href="{% url 'qm_incoming_requests' %}"><i class="fas fa-inbox me-2"></i> Incoming Requests</a>
+        <a href="{% url 'qm_forwarded_requests' %}" class="active"><i class="fas fa-paper-plane me-2"></i> Forward to CO</a>
         <a href="{% url 'qm_feedbacks' %}"><i class="fas fa-comment me-2"></i> Feedback</a>
         <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
     </div>

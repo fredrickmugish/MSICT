@@ -1,0 +1,62 @@
+{% extends "co_base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Send Feedback</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'co_dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Send Feedback</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card card-info card-outline">
+        <div class="card-header">
+          <h3 class="card-title"><i class="fas fa-comment mr-2"></i>Send Feedback to QM</h3>
+        </div>
+        <div class="card-body">
+          <form action="{% url 'co_send_feedback' %}" method="POST">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Subject:</label>
+                  <input type="text" class="form-control" name="subject" placeholder="Enter feedback subject" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Feedback Type:</label>
+                  <select class="form-control" name="feedback_type" required>
+                    <option value="general">General Feedback</option>
+                    <option value="policy">Policy Clarification</option>
+                    <option value="process">Process Improvement</option>
+                    <option value="urgent">Urgent Matter</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Feedback Message:</label>
+              <textarea class="form-control" name="message" rows="4" placeholder="Enter your feedback message..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane mr-2"></i>Send Feedback
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

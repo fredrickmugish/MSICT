@@ -1,0 +1,24 @@
+<!-- templates/incoming_requests.html -->
+{% extends "base_qm.html" %}
+
+{% block title %}Incoming Requests - QM Dashboard{% endblock %}
+{% block page_title %}Incoming Department Requests{% endblock %}
+{% block breadcrumb_active %}Incoming Requests{% endblock %}
+
+{% block content %}
+<div class="card card-warning card-outline">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-inbox mr-2"></i>Incoming Department Requests</h3>
+    <div class="card-tools">
+      <button type="button" class="btn btn-tool" onclick="refreshStats()">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+  </div>
+  {% if incoming_requests %}
+    <!-- Full incoming requests table -->
+  {% else %}
+    <!-- No requests message -->
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,36 +1,47 @@
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LogoutView
+from .views import get_request_details  # Add this import
 
 urlpatterns = [
-    # Home page
+    # ========== Public URLs ==========
     path('', views.home, name='home'),
-
-    # Login page
-    path('login/', views.custom_login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
-
-     # New pages
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
-
-     # Dashboard stats API
-    path('api/dashboard-stats/', views.dashboard_stats, name='dashboard_stats'),
-    path('api/request-status/<int:request_id>/', views.get_request_status, name='get_request_status'),
-    # Department (HZO)
+    path('login/', views.custom_login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    
+    # ========== Department URLs ==========
     path('department/dashboard/', views.department_dashboard, name='department_dashboard'),
-    path('department/submit/', views.submit_request, name='submit_request'),
-    path('department/mark-response-read/<int:response_id>/', views.mark_response_read, name='mark_response_read'),
+    path('department/my-requests/', views.department_my_requests, name='department_my_requests'),
+    path('department/submit-request/', views.submit_request, name='submit_request'),
+    path('department/feedback/', views.department_feedback, name='department_feedback'),
+    path('department/notifications/', views.department_notifications, name='department_notifications'),
+    path('department/mark-read/<int:response_id>/', views.mark_response_read, name='mark_response_read'),
+    path('request/<int:request_id>/details/', get_request_details, name='get_request_details'),
 
-    # QM (Store Keeper)
-    path('qm/dashboard/', views.qm_dashboard, name='qm_dashboard'),
-    path('qm/forward/', views.qm_forward, name='qm_forward'),
+
+
+    # ========== QM URLs ==========
+    path('qm/', views.qm_dashboard, name='qm_dashboard'),
+    path('qm/incoming-requests/', views.qm_incoming_requests, name='qm_incoming_requests'),
+    path('qm/forwarded-requests/', views.qm_forwarded_requests, name='qm_forwarded_requests'),#need modification(fredy template)
+    path('qm/co-decisions/', views.qm_co_decisions, name='qm_co_decisions'),
+    path('qm/feedbacks/', views.qm_feedbacks, name='qm_feedbacks'),
+    path('qm/view-request/<int:request_id>/', views.qm_view_request, name='qm_view_request'),
     path('qm/forward-to-co/', views.forward_to_co, name='forward_to_co'),
-    path('qm/respond-to-department/', views.respond_to_department, name='respond_to_department'),
+    path('qm/respond-to-dept/', views.respond_to_department, name='respond_to_department'),
     path('qm/mark-feedback-read/<int:feedback_id>/', views.mark_feedback_read, name='mark_feedback_read'),
-    path('qm/feedbacks/', views.view_feedbacks, name='qm_feedbacks'),
-
-    # CO (Commanding Officer)
-    path('co/dashboard/', views.co_dashboard, name='co_dashboard'),
-    path('co/action/', views.co_action, name='co_action'),
-    path('co/send-feedback/', views.send_feedback, name='send_feedback'),
+    
+    # ========== CO URLs ==========
+    path('co/', views.co_dashboard, name='co_dashboard'),
+    path('co/review-requests/', views.co_review_requests, name='co_review_requests'),
+    path('co/decision-history/', views.co_decision_history, name='co_decision_history'),
+    path('co/take-action/', views.co_action, name='co_action'),
+    path('co/send-feedback/', views.co_send_feedback, name='co_send_feedback'),
+    # path('co/feedback/', views.co_feedback, name='co_feedback'),
+    
+    # ========== AJAX URLs ==========
+    path('ajax/request-status/<int:request_id>/', views.get_request_status, name='get_request_status'),
+    path('ajax/dashboard-stats/', views.dashboard_stats, name='dashboard_stats'),
 ]

@@ -1,0 +1,95 @@
+{% extends "department_base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Request Details: {{ request.request_number }}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'department_dashboard' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'department_my_request' %}">My Requests</a></li>
+                        <li class="breadcrumb-item active">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Basic Information</h4>
+                            <dl class="row">
+                                <dt class="col-sm-4">Equipment:</dt>
+                                <dd class="col-sm-8">{{ request.equipment }}</dd>
+                                
+                                <dt class="col-sm-4">Quantity:</dt>
+                                <dd class="col-sm-8">{{ request.quantity }}</dd>
+                                
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge 
+                                        {% if request.status == 'approved' %}badge-success
+                                        {% elif request.status == 'rejected' %}badge-danger
+                                        {% elif request.status == 'pending' %}badge-warning
+                                        {% else %}badge-info{% endif %}">
+                                        {{ request.get_status_display }}
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Additional Details</h4>
+                            <dl class="row">
+                                <dt class="col-sm-4">Date Submitted:</dt>
+                                <dd class="col-sm-8">{{ request.date_submitted|date:"Y-m-d H:i" }}</dd>
+                                
+                                <dt class="col-sm-4">Purpose:</dt>
+                                <dd class="col-sm-8">{{ request.purpose }}</dd>
+                                
+                                {% if request.required_date %}
+                                <dt class="col-sm-4">Required By:</dt>
+                                <dd class="col-sm-8">{{ request.required_date|date:"Y-m-d" }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <!-- QM Response Section -->
+                    {% if qm_response %}
+                    <div class="mt-4 border-top pt-3">
+                        <h4>QM Response</h4>
+                        <p>{{ qm_response.response_message }}</p>
+                        <small class="text-muted">
+                            Responded on: {{ qm_response.response_date|date:"Y-m-d H:i" }}
+                        </small>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- CO Decision Section -->
+                    {% if co_decision %}
+                    <div class="mt-4 border-top pt-3">
+                        <h4>CO Decision</h4>
+                        <p>
+                            <strong>Decision:</strong> {{ co_decision.get_decision_display }}<br>
+                            <strong>Reason:</strong> {{ co_decision.reason }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <a href="{% url 'department_my_request' %}" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left mr-2"></i> Back to My Requests
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

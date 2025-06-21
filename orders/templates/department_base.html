@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Department Dashboard - MSICT{% endblock %}</title>
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- Custom styles -->
+  <style>
+    .unread-notification {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+    .brand-link {
+      border-bottom: none !important;
+    }
+    .user-panel {
+      border-bottom: none !important;
+    }
+    .nav-sidebar .nav-item>.nav-link {
+      margin-bottom: 0;
+    }
+    .info-box {
+      cursor: default;
+    }
+    .card-header {
+      border-bottom: 1px solid rgba(0,0,0,.125);
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{% url 'department_dashboard' %}" class="nav-link">Home</a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          {% if unread_responses_count > 0 %}
+            <span class="badge badge-warning navbar-badge">{{ unread_responses_count }}</span>
+          {% endif %}
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">{{ unread_responses_count }} New Responses</span>
+          <div class="dropdown-divider"></div>
+          <a href="{% url 'department_notifications' %}" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> View all responses
+          </a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'department_dashboard' %}" class="brand-link text-center">
+      <span class="brand-text font-weight-light">DEPARTMENT DASHBOARD</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="info">
+          <a href="#" class="d-block">{{ user.username }}</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="{% url 'department_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'department_dashboard' %}active{% endif %}">
+              <i class="nav-icon fas fa-home"></i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'submit_request' %}" class="nav-link {% if request.resolver_match.url_name == 'submit_request' %}active{% endif %}">
+              <i class="nav-icon fas fa-plus"></i>
+              <p>Submit Request</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'department_my_requests' %}" class="nav-link {% if request.resolver_match.url_name == 'department_my_requests' %}active{% endif %}">
+              <i class="nav-icon fas fa-list"></i>
+              <p>My Requests</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'department_notifications' %}" class="nav-link {% if request.resolver_match.url_name == 'department_notifications' %}active{% endif %}">
+              <i class="nav-icon fas fa-bell"></i>
+              <p>Notifications</p>
+              {% if unread_responses_count > 0 %}
+                <span class="right badge badge-danger">{{ unread_responses_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'department_feedback' %}" class="nav-link {% if request.resolver_match.url_name == 'department_feedback' %}active{% endif %}">
+              <i class="nav-icon fas fa-comment"></i>
+              <p>Feedback</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'logout' %}" class="nav-link">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    <div class="p-3">
+      <h5>Quick Actions</h5>
+      <a href="{% url 'submit_request' %}" class="btn btn-primary btn-block mb-2">
+        <i class="fas fa-plus mr-2"></i>Submit New Request
+      </a>
+    </div>
+  </aside>
+  <!-- /.control-sidebar -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline">
+      MSICT Department Portal
+    </div>
+    <strong>Copyright &copy; {% now "Y" %} <a href="#">MSICT</a>.</strong> All rights reserved.
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+{% block extra_js %}{% endblock %}
+
+<script>
+function markAsRead(responseId) {
+    fetch(`{% url 'mark_response_read' 0 %}`.replace('0', responseId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the notification styling
+            const responseElement = document.getElementById(`response-${responseId}`);
+            if (responseElement) {
+                responseElement.classList.remove('callout-warning');
+                responseElement.classList.add('callout-info');
+                
+                // Hide the mark as read button
+                const button = responseElement.querySelector('button');
+                if (button) {
+                    button.style.display = 'none';
+                }
+            }
+            
+            // Update notification badges
+            updateNotificationBadges();
+            
+            // Show success message
+            showAlert('success', 'Response marked as read successfully!');
+        } else {
+            showAlert('danger', data.message || 'Failed to mark response as read');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('danger', 'An error occurred while marking the response as read');
+    });
+}
+
+function updateNotificationBadges() {
+    // Update notification badge in sidebar
+    const sidebarBadge = document.querySelector('.nav-sidebar .badge-danger');
+    if (sidebarBadge) {
+        const currentCount = parseInt(sidebarBadge.textContent);
+        if (currentCount > 1) {
+            sidebarBadge.textContent = currentCount - 1;
+        } else {
+            sidebarBadge.remove();
+        }
+    }
+    
+    // Update notification badge in navbar
+    const navbarBadge = document.querySelector('.navbar-badge');
+    if (navbarBadge) {
+        const currentCount = parseInt(navbarBadge.textContent);
+        if (currentCount > 1) {
+            navbarBadge.textContent = currentCount - 1;
+        } else {
+            navbarBadge.remove();
+        }
+    }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+    
+    // Insert at the top of the content
+    const contentHeader = document.querySelector('.content-header');
+    if (contentHeader) {
+        contentHeader.parentNode.insertBefore(alertDiv, contentHeader.nextSibling);
+    } else {
+        document.querySelector('.content-wrapper').prepend(alertDiv);
+    }
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        $(alertDiv).alert('close');
+    }, 5000);
+}
+
+// Initialize AdminLTE components
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+</body>
+</html>

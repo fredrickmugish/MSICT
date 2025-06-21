@@ -1,0 +1,46 @@
+{% extends "department_base.html" %}
+
+{% block content %}
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th>Request #</th>
+            <th>Equipment</th>
+            <th>Quantity</th>
+            <th>Status</th>
+            <th>Date Submitted</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in requests %}
+        <tr>
+            <td>{{ request.request_number }}</td>
+            <td>{{ request.equipment }}</td>
+            <td>{{ request.quantity }}</td>
+            <td>
+                <span class="badge 
+                    {% if request.status == 'approved' %}badge-success
+                    {% elif request.status == 'rejected' %}badge-danger
+                    {% elif request.status == 'pending' %}badge-warning
+                    {% else %}badge-info{% endif %}">
+                    {{ request.get_status_display }}
+                </span>
+            </td>
+            <td>{{ request.date_submitted|date:"Y-m-d H:i" }}</td>
+            <td>
+    <a href="{% url 'get_request_details' request.id %}" class="btn btn-sm btn-primary">
+        <i class="fas fa-eye"></i> View
+    </a>
+</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">No requests found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+<!-- templates/co_feedback.html -->
+{% extends "base_qm.html" %}
+
+{% block title %}CO Feedback - QM Dashboard{% endblock %}
+{% block page_title %}CO Feedback{% endblock %}
+{% block breadcrumb_active %}CO Feedback{% endblock %}
+
+{% block content %}
+<div class="card card-success card-outline">
+  <div class="card-header">
+    <h3 class="card-title"><i class="fas fa-comment mr-2"></i>CO Feedback</h3>
+  </div>
+  {% if co_feedbacks %}
+    <!-- Full feedback list -->
+  {% else %}
+    <!-- No feedback message -->
+  {% endif %}
+</div>
+{% endblock %}

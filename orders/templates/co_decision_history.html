@@ -1,0 +1,77 @@
+{% extends "co_base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Decision History</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'co_dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Decision History</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card card-secondary card-outline">
+        <div class="card-header">
+          <h3 class="card-title"><i class="fas fa-history mr-2"></i>Recent Decision History</h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" onclick="location.reload()">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          {% if recent_decisions %}
+            {% for decision in recent_decisions %}
+              <div class="card decision-card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-8">
+                      <h6 class="card-title mb-1">
+                        {{ decision.request.equipment }} 
+                        <small class="text-muted">({{ decision.request.request_number }})</small>
+                      </h6>
+                      <p class="card-text mb-1">
+                        <strong>Department:</strong> {{ decision.request.department }} |
+                        <strong>Quantity:</strong> {{ decision.request.quantity }} |
+                        <strong>Submitted by:</strong> {{ decision.request.submitted_by.get_full_name|default:decision.request.submitted_by.username }}
+                      </p>
+                      {% if decision.reason %}
+                        <p class="card-text mb-1"><strong>Reason:</strong> {{ decision.reason }}</p>
+                      {% endif %}
+                      {% if decision.additional_notes %}
+                        <p class="card-text mb-1"><strong>Notes:</strong> {{ decision.additional_notes }}</p>
+                      {% endif %}
+                    </div>
+                    <div class="col-md-4 text-right">
+                      <span class="badge bg-{% if decision.decision == 'approved' %}success{% else %}danger{% endif %} mb-2">
+                        {{ decision.decision|title }}
+                      </span>
+                      <br>
+                      <small class="text-muted">{{ decision.decision_date|date:"M d, Y H:i" }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-4">
+              <i class="fas fa-history fa-3x text-muted mb-3"></i>
+              <p class="text-muted">No decisions made yet.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

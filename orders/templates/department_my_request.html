@@ -131,22 +131,22 @@
         <div class="tab-content" id="requestTabsContent">
             <!-- All Requests Tab -->
             <div class="tab-pane fade show active" id="all" role="tabpanel">
-                {% include 'partials/requests_table.html' with requests=my_requests show_all=True %}
+                {% include 'requests_table.html' with requests=my_requests show_all=True %}
             </div>
 
             <!-- Pending Requests Tab -->
             <div class="tab-pane fade" id="pending" role="tabpanel">
-                {% include 'partials/requests_table.html' with requests=pending_requests_list %}
+                {% include 'requests_table.html' with requests=pending_requests_list %}
             </div>
 
             <!-- Approved Requests Tab -->
             <div class="tab-pane fade" id="approved" role="tabpanel">
-                {% include 'partials/requests_table.html' with requests=approved_requests_list %}
+                {% include 'requests_table.html' with requests=approved_requests_list %}
             </div>
 
             <!-- Rejected Requests Tab -->
             <div class="tab-pane fade" id="rejected" role="tabpanel">
-                {% include 'partials/requests_table.html' with requests=rejected_requests_list %}
+                {% include 'requests_table.html' with requests=rejected_requests_list %}
             </div>
         </div>
     </div>

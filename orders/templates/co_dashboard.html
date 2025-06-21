@@ -12,22 +12,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <!-- Custom styles -->
   <style>
-    .priority-urgent { 
-      border-left: 4px solid #dc3545;
-      animation: pulse 2s infinite;
-    }
-    .priority-high { border-left: 4px solid #fd7e14; }
-    .priority-medium { border-left: 4px solid #ffc107; }
-    .priority-low { border-left: 4px solid #28a745; }
-    @keyframes pulse { 
-      0% { opacity: 1; } 
-      50% { opacity: 0.7; } 
-      100% { opacity: 1; } 
-    }
-    .decision-card { border-left: 4px solid #6c757d; }
     .info-box-icon { display: flex; align-items: center; justify-content: center; }
     .info-box-icon i { font-size: 1.8rem; }
-    .table-responsive { overflow-x: auto; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -41,7 +27,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Home</a>
+        <a href="{% url 'co_dashboard' %}" class="nav-link">Home</a>
       </li>
     </ul>
 
@@ -76,25 +62,25 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item">
-            <a href="#dashboard" class="nav-link active">
+            <a href="{% url 'co_dashboard' %}" class="nav-link active">
               <i class="nav-icon fas fa-home"></i>
               <p>Dashboard</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#review" class="nav-link">
+            <a href="{% url 'co_review_requests' %}" class="nav-link">
               <i class="nav-icon fas fa-tasks"></i>
               <p>Review Requests</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#history" class="nav-link">
+            <a href="{% url 'co_decision_history' %}" class="nav-link">
               <i class="nav-icon fas fa-history"></i>
               <p>Decision History</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#feedback" class="nav-link">
+            <a href="{% url 'co_send_feedback' %}" class="nav-link">
               <i class="nav-icon fas fa-comment"></i>
               <p>Send Feedback</p>
             </a>
@@ -123,7 +109,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'co_dashboard' %}">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </div>
@@ -200,7 +186,7 @@
                 <span class="info-box-text">Approval Rate</span>
                 <span class="info-box-number">
                   {% if total_requests > 0 %}
-                    {{ approved_requests|floatformat:0 }}%
+                    {{ approval_rate|floatformat:0 }}%
                   {% else %}
                     0%
                   {% endif %}
@@ -210,174 +196,43 @@
           </div>
         </div>
 
-        <!-- Review Requests Section -->
-        <div id="review" class="card card-warning card-outline mt-4">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-tasks mr-2"></i>Equipment Requests Awaiting Review</h3>
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" onclick="refreshStats()">
-                <i class="fas fa-sync-alt"></i>
-              </button>
+        <!-- Quick Links -->
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="card card-warning card-outline">
+              <div class="card-body text-center">
+                <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+                <h4>Review Requests</h4>
+                <p class="text-muted">{{ pending_requests }} requests awaiting your review</p>
+                <a href="{% url 'co_review_requests' %}" class="btn btn-warning">
+                  <i class="fas fa-arrow-right mr-2"></i>Go to Review
+                </a>
+              </div>
             </div>
           </div>
-          <div class="card-body p-0">
-            {% if review_list %}
-              <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                  <thead>
-                    <tr>
-                      <th>Request #</th>
-                      <th>Department</th>
-                      <th>Equipment</th>
-                      <th>Quantity</th>
-                      <th>Purpose</th>
-                      <th>QM Note</th>
-                      <th>QM Recommendation</th>
-                      <th>Submitted</th>
-                      <th>Days</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for request in review_list %}
-                    <tr class="priority-{{ request.priority }}">
-                      <td><strong>{{ request.request_number }}</strong></td>
-                      <td>{{ request.department }}</td>
-                      <td>{{ request.equipment }}</td>
-                      <td>{{ request.quantity }}</td>
-                      <td>{{ request.purpose|truncatewords:8 }}</td>
-                      <td>
-                        {% if request.qm_note %}
-                          <small>{{ request.qm_note.note|truncatewords:6 }}</small>
-                        {% else %}
-                          <em class="text-muted">No note</em>
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if request.qm_note %}
-                          <span class="badge bg-{% if request.qm_note.recommendation == 'approve' %}success{% elif request.qm_note.recommendation == 'reject' %}danger{% else %}warning{% endif %}">
-                            {{ request.qm_note.get_recommendation_display }}
-                          </span>
-                        {% else %}
-                          <span class="badge bg-secondary">No recommendation</span>
-                        {% endif %}
-                      </td>
-                      <td>{{ request.date_submitted|date:"M d, Y" }}</td>
-                      <td>
-                        <span class="{% if request.days_pending > 7 %}text-danger{% elif request.days_pending > 3 %}text-warning{% endif %}">
-                          {{ request.days_pending }} days
-                        </span>
-                      </td>
-                      <td>
-                        <div class="btn-group" role="group">
-                          <button class="btn btn-sm btn-success" onclick="makeDecision({{ request.id }}, 'approve', '{{ request.equipment|escapejs }}')">
-                            <i class="fas fa-check"></i>
-                          </button>
-                          <button class="btn btn-sm btn-danger" onclick="makeDecision({{ request.id }}, 'reject', '{{ request.equipment|escapejs }}')">
-                            <i class="fas fa-times"></i>
-                          </button>
-                          <button class="btn btn-sm btn-info" onclick="viewFullDetails({{ request.id }})">
-                            <i class="fas fa-eye"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+          <div class="col-md-4">
+            <div class="card card-secondary card-outline">
+              <div class="card-body text-center">
+                <i class="fas fa-history fa-3x text-secondary mb-3"></i>
+                <h4>Decision History</h4>
+                <p class="text-muted">View your recent decisions</p>
+                <a href="{% url 'co_decision_history' %}" class="btn btn-secondary">
+                  <i class="fas fa-arrow-right mr-2"></i>View History
+                </a>
               </div>
-            {% else %}
-              <div class="text-center py-5">
-                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No requests pending your review.</p>
-              </div>
-            {% endif %}
+            </div>
           </div>
-        </div>
-
-        <!-- Decision History Section -->
-        <div id="history" class="card card-secondary card-outline mt-4">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-history mr-2"></i>Recent Decision History</h3>
-          </div>
-          <div class="card-body">
-            {% if recent_decisions %}
-              {% for decision in recent_decisions %}
-                <div class="card decision-card mb-3">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <h6 class="card-title mb-1">
-                          {{ decision.request.equipment }} 
-                          <small class="text-muted">({{ decision.request.request_number }})</small>
-                        </h6>
-                        <p class="card-text mb-1">
-                          <strong>Department:</strong> {{ decision.request.department }} |
-                          <strong>Quantity:</strong> {{ decision.request.quantity }} |
-                          <strong>Submitted by:</strong> {{ decision.request.submitted_by.get_full_name|default:decision.request.submitted_by.username }}
-                        </p>
-                        {% if decision.reason %}
-                          <p class="card-text mb-1"><strong>Reason:</strong> {{ decision.reason }}</p>
-                        {% endif %}
-                        {% if decision.additional_notes %}
-                          <p class="card-text mb-1"><strong>Notes:</strong> {{ decision.additional_notes }}</p>
-                        {% endif %}
-                      </div>
-                      <div class="col-md-4 text-right">
-                        <span class="badge bg-{% if decision.decision == 'approved' %}success{% else %}danger{% endif %} mb-2">
-                          {{ decision.decision|title }}
-                        </span>
-                        <br>
-                        <small class="text-muted">{{ decision.decision_date|date:"M d, Y H:i" }}</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="text-center py-4">
-                <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No decisions made yet.</p>
+          <div class="col-md-4">
+            <div class="card card-info card-outline">
+              <div class="card-body text-center">
+                <i class="fas fa-comment fa-3x text-info mb-3"></i>
+                <h4>Send Feedback</h4>
+                <p class="text-muted">Provide feedback to QM</p>
+                <a href="{% url 'co_send_feedback' %}" class="btn btn-info">
+                  <i class="fas fa-arrow-right mr-2"></i>Send Feedback
+                </a>
               </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- Send Feedback Section -->
-        <div id="feedback" class="card card-info card-outline mt-4">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-comment mr-2"></i>Send Feedback to QM</h3>
-          </div>
-          <div class="card-body">
-            <form action="{% url 'send_feedback' %}" method="POST">
-              {% csrf_token %}
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Subject:</label>
-                    <input type="text" class="form-control" name="subject" placeholder="Enter feedback subject" required>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label>Feedback Type:</label>
-                    <select class="form-control" name="feedback_type" required>
-                      <option value="general">General Feedback</option>
-                      <option value="policy">Policy Clarification</option>
-                      <option value="process">Process Improvement</option>
-                      <option value="urgent">Urgent Matter</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label>Feedback Message:</label>
-                <textarea class="form-control" name="message" rows="4" placeholder="Enter your feedback message..." required></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">
-                <i class="fas fa-paper-plane mr-2"></i>Send Feedback
-              </button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
@@ -393,76 +248,6 @@
   </footer>
 </div>
 
-<!-- Decision Modal -->
-<div class="modal fade" id="decisionModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header" id="decision-modal-header">
-        <h4 class="modal-title"><i class="fas fa-gavel mr-2"></i>Make Decision</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{% url 'co_action' %}" method="POST">
-        {% csrf_token %}
-        <div class="modal-body">
-          <input type="hidden" id="decision-request-id" name="request_id">
-          <input type="hidden" id="decision-action" name="action">
-          
-          <div class="alert" id="decision-alert">
-            <i class="fas fa-info-circle mr-2"></i>
-            You are about to <strong id="decision-action-text"></strong> the request for: <strong id="decision-equipment-name"></strong>
-          </div>
-          
-          <div class="form-group">
-            <label>Reason for Decision:</label>
-            <textarea class="form-control" name="reason" rows="3" placeholder="Provide reason for your decision..." required></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>Additional Notes (Optional):</label>
-            <textarea class="form-control" name="additional_notes" rows="2" placeholder="Any additional comments or instructions..."></textarea>
-          </div>
-          
-          <div id="approval-fields" style="display: none;">
-            <div class="form-group">
-              <label>Budget Allocation:</label>
-              <input type="number" class="form-control" name="budget_allocation" step="0.01" placeholder="0.00">
-            </div>
-            <div class="form-group">
-              <label>Expected Procurement Date:</label>
-              <input type="date" class="form-control" name="expected_procurement_date">
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn" id="decision-submit-btn">
-            <i class="fas fa-gavel mr-2"></i>Confirm Decision
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Request Details Modal -->
-<div class="modal fade" id="requestDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h4 class="modal-title"><i class="fas fa-info-circle mr-2"></i>Request Details</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="requestDetailsContent">
-        <!-- Content will be loaded here -->
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- REQUIRED SCRIPTS -->
 <!-- jQuery -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -472,98 +257,9 @@
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <script>
-function makeDecision(requestId, action, equipmentName) {
-    document.getElementById('decision-request-id').value = requestId;
-    document.getElementById('decision-action').value = action;
-    document.getElementById('decision-equipment-name').textContent = equipmentName;
-    document.getElementById('decision-action-text').textContent = action.toUpperCase();
-    
-    const header = document.getElementById('decision-modal-header');
-    const submitBtn = document.getElementById('decision-submit-btn');
-    const alert = document.getElementById('decision-alert');
-    const approvalFields = document.getElementById('approval-fields');
-    
-    if (action === 'approve') {
-        header.className = 'modal-header bg-success text-white';
-        submitBtn.className = 'btn btn-success';
-        alert.className = 'alert alert-success';
-        approvalFields.style.display = 'block';
-    } else {
-        header.className = 'modal-header bg-danger text-white';
-        submitBtn.className = 'btn btn-danger';
-        alert.className = 'alert alert-danger';
-        approvalFields.style.display = 'none';
-    }
-    
-    $('#decisionModal').modal('show');
-}
-
-function viewFullDetails(requestId) {
-    fetch(`{% url 'get_request_status' 0 %}`.replace('0', requestId))
-        .then(response => response.json())
-        .then(data => {
-            const content = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>Request Information</h5>
-                        <table class="table table-sm">
-                            <tr><td><strong>Request Number:</strong></td><td>${data.request_number || 'N/A'}</td></tr>
-                            <tr><td><strong>Equipment:</strong></td><td>${data.equipment || 'N/A'}</td></tr>
-                            <tr><td><strong>Quantity:</strong></td><td>${data.quantity || 'N/A'}</td></tr>
-                            <tr><td><strong>Department:</strong></td><td>${data.department || 'N/A'}</td></tr>
-                            <tr><td><strong>Priority:</strong></td><td>${data.priority_display || 'N/A'}</td></tr>
-                            <tr><td><strong>Status:</strong></td><td>${data.status_display || 'N/A'}</td></tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <h5>Timeline</h5>
-                        <table class="table table-sm">
-                            <tr><td><strong>Submitted:</strong></td><td>${data.date_submitted || 'N/A'}</td></tr>
-                            <tr><td><strong>Last Updated:</strong></td><td>${data.last_updated || 'N/A'}</td></tr>
-                            <tr><td><strong>Days Pending:</strong></td><td>${data.days_pending || 0} days</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h5>Purpose</h5>
-                        <p class="border p-3 bg-light">${data.purpose || 'No purpose specified'}</p>
-                    </div>
-                </div>
-                ${data.qm_note ? `
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h5>QM Note</h5>
-                        <div class="border p-3 bg-info bg-opacity-10">
-                            <p><strong>Recommendation:</strong> ${data.qm_recommendation || 'None'}</p>
-                            <p><strong>Note:</strong> ${data.qm_note}</p>
-                            <small class="text-muted">Forwarded: ${data.qm_forwarded_date || 'N/A'}</small>
-                        </div>
-                    </div>
-                </div>
-                ` : ''}
-            `;
-            document.getElementById('requestDetailsContent').innerHTML = content;
-            $('#requestDetailsModal').modal('show');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error loading request details');
-        });
-}
-
-function refreshStats() {
-    fetch('{% url "dashboard_stats" %}')
-        .then(response => response.json())
-        .then(data => {
-            location.reload();
-        })
-        .catch(error => console.error('Error refreshing stats:', error));
-}
-
 // Auto-refresh every 2 minutes
 setInterval(() => {
-    refreshStats();
+    location.reload();
 }, 120000);
 
 // Initialize AdminLTE components
